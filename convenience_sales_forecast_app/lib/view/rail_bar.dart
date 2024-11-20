@@ -1,4 +1,5 @@
 import 'package:convenience_sales_forecast_app/view/chat.dart';
+import 'package:convenience_sales_forecast_app/view/map_location_pick.dart';
 import 'package:convenience_sales_forecast_app/view/sales_history.dart';
 import 'package:convenience_sales_forecast_app/vm/tab_handler.dart';
 import 'package:flutter/material.dart';
@@ -54,6 +55,11 @@ class RailBar extends StatelessWidget {
                   label: Text('Home'),
                 ),
                 NavigationRailDestination(
+                  icon: Icon(Icons.location_on_outlined),
+                  selectedIcon: Icon(Icons.location_on),
+                  label: Text('Map'),
+                ),
+                NavigationRailDestination(
                   icon: Icon(Icons.calendar_month),
                   selectedIcon: Icon(Icons.calendar_month),
                   label: Text('Reservation'),
@@ -78,6 +84,8 @@ class RailBar extends StatelessWidget {
       case 0:
         return const Chat();
       case 1:
+        return MapLocationPick();
+      case 2:
         return const SalesHistory();
       default:
         return Container();
