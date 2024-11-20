@@ -20,19 +20,75 @@ class MapLocationPick extends StatelessWidget {
             // 지도
             flutterMap(),
 
-            // 행정동 버튼
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () => mapHandler.changeLocate(0),
-                  child: const Text('신촌동'),
-                ),
-                ElevatedButton(
-                  onPressed: () => mapHandler.changeLocate(1),
-                  child: const Text('안암동'),
-                ),
-              ],
+            // 행정동 버튼, 영역 선택
+            Obx(
+              () => Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.black,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () => mapHandler.changeLocate(0),
+                          child: const Text(
+                            '신촌동',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => mapHandler.changeLocate(1),
+                          child: const Text(
+                            '안암동',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ),
+                        const Text(
+                          '영역범위  ',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        DropdownButton(
+                          dropdownColor: Colors.black,
+                          iconEnabledColor: Colors.white,
+                          value: mapHandler.dropdownValue.value, // 현재 값
+                          icon: const Icon(Icons.keyboard_arrow_down),
+                          items: mapHandler.rangeList.map((int items) {
+                            return DropdownMenuItem(
+                              value: items,
+                              child: Text(
+                                "$items m",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            mapHandler.setRange(value!);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
 
             // 예상 매출 금액 팝업
@@ -102,34 +158,7 @@ class MapLocationPick extends StatelessWidget {
                     )
                   : const SizedBox.shrink(),
             ),
-            Obx(
-              () => Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  DropdownButton(
-                    dropdownColor:
-                        Theme.of(context).colorScheme.primaryContainer,
-                    iconEnabledColor: Theme.of(context).colorScheme.secondary,
-                    value: mapHandler.dropdownValue.value, // 현재 값
-                    icon: const Icon(Icons.keyboard_arrow_down),
-                    items: mapHandler.rangeList.map((int items) {
-                      return DropdownMenuItem(
-                        value: items,
-                        child: Text(
-                          items.toString(),
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.tertiary,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      mapHandler.setRange(value!);
-                    },
-                  ),
-                ],
-              ),
-            ),
+
             Obx(
               () => SlideTransition(
                 position: mapHandler.offsetAnimation,
@@ -146,6 +175,7 @@ class MapLocationPick extends StatelessWidget {
 
   // -- Widgets --
   Widget flutterMap() {
+    mapHandler.isRun.value = true;
     return FlutterMap(
       mapController: mapHandler.mapController,
       options: MapOptions(

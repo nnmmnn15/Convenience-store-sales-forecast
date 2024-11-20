@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:convenience_sales_forecast_app/model/store_history.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
@@ -6,6 +7,9 @@ import 'package:latlong2/latlong.dart' as latlng;
 
 class MapHandler extends GetxController with GetTickerProviderStateMixin {
   final mapController = MapController();
+
+  // 지도의 실행 상태
+  final isRun = false.obs;
 
   // 신촌동 중심 좌표
   final shinchonBounds = LatLngBounds(
@@ -31,6 +35,14 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
   late AnimationController animationController;
   late Animation<Offset> offsetAnimation;
 
+  // 상세 보기 변경 값
+  final feature1 = 0.0.obs;
+  final feature2 = 0.0.obs;
+  final feature3 = 0.0.obs;
+
+  // 이름 입력 텍스트 필드
+  final TextEditingController textEditingController = TextEditingController();
+
   // 선택한 위도 경도
   final selectLatLng = const latlng.LatLng(0, 0).obs;
 
@@ -38,10 +50,16 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
   final rangeList = [50, 100, 150, 200, 250];
   final dropdownValue = 50.obs;
 
-  // 상세 보기 변경 값
-  final feature1 = 0.0.obs;
-  final feature2 = 0.0.obs;
-  final feature3 = 0.0.obs;
+  // Firebase
+  final history = FirebaseFirestore.instance.collection('store_hist');
+
+  // 저장 기록 리스트
+  final histList = <StoreHistory>[].obs;
+
+  // 선택한 기록의 index
+  final RxInt selectedIndex = (-1).obs;
+  // 선택 상태 체크
+  final selectedStore = false.obs;
 
   @override
   void onInit() {
@@ -51,6 +69,9 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
     // 범위 초기값
     dropdownValue.value = rangeList[0];
 
+    // 저장 내역 불러오기
+    getHistory();
+
     // 애니메이션 설정
     animationController = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -58,7 +79,7 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
     );
 
     offsetAnimation = Tween<Offset>(
-      begin: const Offset(-1.0, 0.0), // 시작점
+      begin: const Offset(0.0, 1.0), // 시작점
       end: Offset.zero, // 종료점
     ).animate(CurvedAnimation(
       parent: animationController,
@@ -114,12 +135,42 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
     // lng: "double"
     // sales_result: "int"
     // features: "double"
-    FirebaseFirestore.instance.collection('store_hist').add({
+    DateTime now = DateTime.now();
+    // !! 이메일, 매출 예측값,
+    history.add({
       'email': 'dnjsd99@gmail.com',
+      'alias': textEditingController.text,
       'lat': selectLatLng.value.latitude,
       'lng': selectLatLng.value.longitude,
       'salesResult': 12340000,
-      'features': 20
+      'features': feature1.toInt(),
+      'updatetime': now.toString(),
+    });
+  }
+
+  void getHistory() {
+    history
+        // .where('state', isEqualTo: '게시') // !! 조건 변경
+        .orderBy('updatetime', descending: true) // 정렬 updatetime의 역순(내림차순)
+        .snapshots()
+        .listen((event) {
+      histList.value = event.docs
+          .map(
+            (doc) => StoreHistory.fromMap(doc.data(), doc.id),
+          )
+          .toList();
+    });
+  }
+
+  void updateHistory(StoreHistory storeInfo) {
+    history.doc(storeInfo.docId).set({
+      'email': storeInfo.email,
+      'alias': storeInfo.alias,
+      'lat': storeInfo.lat,
+      'lng': storeInfo.lng,
+      'salesResult': storeInfo.salesResult,
+      'features': feature1.value.toInt(),
+      'updatetime': storeInfo.updatetime,
     });
   }
 }

@@ -86,7 +86,7 @@ class RailBar extends StatelessWidget {
       case 1:
         return MapLocationPick();
       case 2:
-        return const SalesHistory();
+        return SalesHistory();
       default:
         return Container();
     }

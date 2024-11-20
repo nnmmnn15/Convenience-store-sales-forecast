@@ -82,12 +82,18 @@ class SalesDetail extends StatelessWidget {
                 ),
               ],
             ),
-            ElevatedButton(
-              onPressed: () {
-                mapHandler.saveStoreInf();
-                buttonDialog();
-              },
-              child: Text('data'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    //
+                    inputAlert();
+                    //
+                  },
+                  child: const Text('저장'),
+                ),
+              ],
             )
           ],
         ),
@@ -96,6 +102,7 @@ class SalesDetail extends StatelessWidget {
   }
 
   // --- Functions ---
+  // 적용 완료 알람창
   buttonDialog() {
     Get.defaultDialog(
       title: "결과",
@@ -111,6 +118,38 @@ class SalesDetail extends StatelessWidget {
           child: const Text('확인'),
         )
       ],
+    );
+  }
+
+  // 별칭 입력창
+  inputAlert() {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('이름 입력'),
+        content: TextField(
+          controller: mapHandler.textEditingController,
+          decoration: const InputDecoration(hintText: "선택한 지점의 이름을 설정해주세요"),
+        ),
+        actions: [
+          TextButton(
+            child: const Text('확인'),
+            onPressed: () {
+              Get.back(); // 다이얼로그 닫기
+              // 저장 알람
+              mapHandler.saveStoreInf();
+              buttonDialog();
+              mapHandler.textEditingController.text = '';
+            },
+          ),
+          TextButton(
+            child: const Text('취소'),
+            onPressed: () {
+              mapHandler.textEditingController.text = '';
+              Get.back(); // 다이얼로그 닫기
+            },
+          ),
+        ],
+      ),
     );
   }
 }
