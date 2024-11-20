@@ -60,133 +60,128 @@ class Chat extends StatelessWidget {
                 ChatRoom room = chatsHandler.rooms[index];
                 return GestureDetector(
                   onTap: () async {
-                    chatsHandler.setcurrentRoomId(room.id);
-                    // await chatsHandler.setcurrentUserId(room.userz);
-                    // await chatsHandler.setcurrentRoomImage(room.image);
-                    await chatsHandler.showChat();
+                    await chatsHandler.setcurrentRoomId(room.id);
                     await chatsHandler.queryChat(chatsHandler.currentRoomId.value);
+                    await chatsHandler.showChat();
                     selectedChatIndex.value = index;
                   },
                   child: Obx(() => Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 8.0, horizontal: 12.0),
-                        child: Card(
-                          color: Colors.grey[200],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                            side: BorderSide(
-                              color: selectedChatIndex.value == index
-                                  ? Colors.blue // 선택된 항목의 테두리 색상 변경
-                                  : Colors.transparent,
-                              width: 2.0,
-                            ),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 12.0
+                      ),
+                      child: Card(
+                        color: Colors.grey[200],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          side: BorderSide(
+                            color: selectedChatIndex.value == index
+                            ? Colors.blue // 선택된 항목의 테두리 색상 변경
+                            : Colors.transparent,
+                            width: 2.0,
                           ),
-                          elevation: 3,
-                          child: ListTile(
-                               leading: CircleAvatar(
-                              backgroundImage: NetworkImage(room.imagePath),
-                              radius: 30,
-                            ),
-                            title: Text(
-                              room.id == 'Anam' ? '안암동 점주들 모임' : '신촌동 점주들 모임',
-                              style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                            ),
+                        ),
+                        elevation: 3,
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundImage: NetworkImage(room.imagePath),
+                            radius: 30,
                           ),
-            //               ListTile(
-            //                 // leading: CircleAvatar(
-            //                 //   backgroundImage: NetworkImage(room.image),
-            //                 //   radius: 30,
-            //                 // ),
-            //                 title: Text(
-            //                   chatsHandler.roomName[index],
-            //                   style: const TextStyle(
-            //                       fontSize: 20, fontWeight: FontWeight.bold),
-            //                 ),
-            //                 subtitle: index < chatsHandler.lastChats.length
-            //                     ? Text(
-            //                         chatsHandler.lastChats[index].text,
-            //                         maxLines: 1,
-            //                         overflow: TextOverflow.ellipsis,
-            //                         style: const TextStyle(
-            //                             fontSize: 14, color: Colors.grey),
-            //                       )
-            //                     : const Text('채팅이 없습니다.',
-            //                         style: TextStyle(
-            //                             fontSize: 14, color: Colors.grey)),
-            //                 trailing: index < chatsHandler.lastChats.length
-            //                     ? Text(
-            //                         DateTime.now().difference(DateTime.parse(
-            //                                     chatsHandler.lastChats[index]
-            //                                         .timestamp)) <
-            //                                 const Duration(hours: 24)
-            //                             ? chatsHandler
-            //                                 .lastChats[index].timestamp
-            //                                 .substring(11, 16)
-            //                             : "${chatsHandler.lastChats[index].timestamp.substring(5, 7)}월 ${chatsHandler.lastChats[index].timestamp.substring(8, 10)}일",
-            //                         style: const TextStyle(
-            //                             fontSize: 12, color: Colors.grey),
-            //                       )
-            //                     : null,
-            //               ),
-            //             ),
-            //           )),
-            //     );
-            //   },
+                          title: Text(
+                            room.id == 'Anam' ? '안암동 점주들 모임' : '신촌동 점주들 모임',
+                            style: const TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: index < chatsHandler.lastChats.length
+                          ? Text(
+                            chatsHandler.lastChats[index].text,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 14, color: Colors.grey),
+                          )
+                          : const Text('채팅이 없습니다.',
+                            style: TextStyle(
+                              fontSize: 14, color: Colors.grey
+                            )
+                          ),
+                          trailing: index < chatsHandler.lastChats.length? 
+                          Text(
+                            DateTime.now().difference(DateTime.parse(
+                              chatsHandler.lastChats[index].timestamp)) <
+                              const Duration(hours: 24) ?
+                              chatsHandler.lastChats[index].timestamp.substring(11, 16):
+                                "${chatsHandler.lastChats[index].timestamp.substring(5, 7)}월 ${chatsHandler.lastChats[index].timestamp.substring(8, 10)}일",
+                            style: const TextStyle(
+                              fontSize: 12, color: Colors.grey
+                            ),
+                          ): null,
+                        ),
+                      ),
+                    )
+                  ),
+                );
+              },
             ),
           ),
-        )
-      );
-  }))),
-  Expanded(
-    flex: 5,
-    child: chatsHandler.chatShow.value? 
-    chatDetail(context,):
-    const Center(child: Text('채팅을 선택하세요')),
-    ),]);
+        ),
+        Expanded(
+          flex: 5,
+          child: chatsHandler.chatShow.value? 
+          chatDetail(context,):
+          const Center(child: Text('채팅을 선택하세요')
+          ),
+        ),
+      ]
+    );
   }
   Widget chatDetail(BuildContext context) {
     return Stack(
       children: [
-        // 배경 이미지
-        Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-
-              image: AssetImage('images/ai.png'), // 배경 이미지 경로
-              fit: BoxFit.contain, // 이미지를 화면에 꽉 채움
+        Opacity(
+          opacity: chatsHandler.opacity.value,
+          child: Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('images/ai.png',),
+                fit: BoxFit.contain,
+              ),
             ),
           ),
         ),
-        // 콘텐츠 (채팅 리스트와 입력 필드)
-        Column(
-          children: [
-            Expanded(
-              child: chatList(context),
+       Column(
+        children: [
+          Material(
+            elevation: 6.0, // elevation 추가
+            color: Colors.teal[200], // 배경색 추가
+            child: Container(
+              width: double.infinity, // 가로로 꽉 채우기
+              padding: const EdgeInsets.symmetric(vertical: 12), // 상하 간격 조절
+              child: Text(
+                chatsHandler.currentRoomId.value == 'Anam' ? '안암동 점주들 모임' : '신촌동 점주들 모임',
+                textAlign: TextAlign.center, // 텍스트 중앙 정렬
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white, // 텍스트 색상
+                ),
+              ),
             ),
-            chatInputField(context),
-          ],
-        ),
+          ),
+          Expanded(
+            child: chatList(context),
+          ),
+          chatInputField(context),
+        ],
+      )
       ],
     );
   }
-  // Widget chatDetail(BuildContext context) {
-  //   return Column(
-  //     children: [
-  //       Expanded(
-  //         child: chatList(context),
-  //       ),
-  //       chatInputField(context),
-  //     ],
-  //   );
-  // }
 
   Widget chatList(BuildContext context) {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       chatsHandler.listViewContoller
           .jumpTo(chatsHandler.listViewContoller.position.maxScrollExtent);
     });
-
     return ListView.builder(
       controller: chatsHandler.listViewContoller,
       itemCount: chatsHandler.chats.length,
@@ -231,17 +226,39 @@ class Chat extends StatelessWidget {
                 ),
               ),
             ]:[
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 5),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.blueGrey[100],
-                  borderRadius: BorderRadius.circular(10),
+              Padding(
+                padding: const EdgeInsets.only(bottom:12.0),
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage(
+                    chatsHandler.getUserImageByEmail(chatsHandler.users, chat.sender)!
+                  ),
+                  radius: 35,
                 ),
-                child: Text(
-                  chat.text,
-                  style: const TextStyle(fontSize: 16),
-                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 15),
+                    // padding: const EdgeInsets.all(12),
+                    child: Text(
+                      chatsHandler.getUserNameByEmail(chatsHandler.users, chat.sender)!,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.blueGrey[100],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      chat.text,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(width: 4),
               Text(
@@ -292,7 +309,7 @@ class Chat extends StatelessWidget {
 
   inputChat() async {
     if (chatController.text.trim().isEmpty) return;
-    ChatList newChat = ChatList(text: chatController.text.trim(), timestamp: DateTime.now().toString(), sender: userHandler.box.read('id'));
+    ChatList newChat = ChatList(text: chatController.text.trim(), timestamp: DateTime.now().toString(), sender: userHandler.box.read('id'),roomId: chatsHandler.currentRoomId.value);
     await chatsHandler.addChat(newChat);
     chatController.clear();
   }

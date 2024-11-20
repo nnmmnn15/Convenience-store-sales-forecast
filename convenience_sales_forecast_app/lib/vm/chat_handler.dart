@@ -1,28 +1,51 @@
-import 'dart:convert';
-
+/*
+author: 이원영
+Description: view/chat.dart에 사용될 chat collection handler
+Fixed: 11/20
+Usage: 채팅 기능 구현
+*/
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:convenience_sales_forecast_app/model/chat_list.dart';
 import 'package:convenience_sales_forecast_app/model/chat_room.dart';
+import 'package:convenience_sales_forecast_app/model/users.dart';
 import 'package:convenience_sales_forecast_app/vm/user_handler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
+
 class ChatHandler extends UserHandler {
   final chats = <ChatList>[].obs;
   final rooms = <ChatRoom>[].obs;
+  final lastChats = <ChatList>[].obs;
   ScrollController listViewContoller = ScrollController();
   RxBool chatShow = false.obs;
-  RxString currentRoomId = ''.obs;
+  RxString currentRoomId = 'Anam'.obs;
+  RxDouble opacity = 1.0.obs;
   final CollectionReference _rooms =
       FirebaseFirestore.instance.collection('chat');
- 
+  Timer? _timer;
 
+  void startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      queryLastChat(rooms);
+    });
+  }
 
+  @override
+  void onInit() async {
+    super.onInit();
+    getAllData();
+    startTimer();
+  }
+
+  @override
+  void onClose() {
+    _timer?.cancel(); // 타이머 종료
+    super.onClose();
+  }
   getAllData() async {
     await makeChatRoom();
-    // await queryLastChat();
-    // await queryChat();
-    // await getlastName();
+    await queryChat(currentRoomId.value);
     update();
   }
 
@@ -33,14 +56,33 @@ class ChatHandler extends UserHandler {
 
   showChat() async {
     chatShow.value = true;
+    opacity.value = 0.25;
     update();
   }
 
+  String? getUserImageByEmail(List<Users> users, String email) {
+    // users 리스트에서 email이 일치하는 항목 찾기
+    final matchedUser = users.firstWhere(
+      (user) => user.email == email,
+      orElse: () => Users(email: '', image: '', name: ''), // 기본값 설정
+    );
+    return matchedUser.image.isNotEmpty ? matchedUser.image : null;
+  }
+
+
+  String? getUserNameByEmail(List<Users> users, String email) {
+    final matchedUser = users.firstWhere(
+      (user) => user.email == email,
+      orElse: () => Users(email: '', image: '', name: ''), // 기본값 설정
+    );
+    return matchedUser.name.isNotEmpty ? matchedUser.name : null;
+  }
+
+
   queryChat(String room) async{
-    FirebaseFirestore.instance
-        .collection('chat') // chat 컬렉션
-        .doc(room) // 특정 문서 ID
-        .snapshots() // 실시간 스냅샷
+    _rooms
+        .doc(room) 
+        .snapshots() 
         .listen((DocumentSnapshot docSnapshot) {
       if (docSnapshot.exists) {
         List<dynamic> messages = docSnapshot.get('chats') ?? [];
@@ -51,64 +93,47 @@ class ChatHandler extends UserHandler {
         chats.value = mappedMessages;
       } else {
         chats.clear();
-        print("Document does not exist!");
       }
     });
   }
 
-
-  queryLastChat() async {
-    List<ChatList> returnResult = [];
-    if(returnResult.isNotEmpty){
-      returnResult.clear();
-    }
-    QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
-        .instance
-        .collection("chat")
-        .where('clinic', isEqualTo: Get.find<UserHandler>().box.read('id'))
-        .get();
-    var tempresult = snapshot.docs.map((doc) => doc.data()).toList();
-    // for (int i = 0; i < tempresult.length; i++) {
-    //   ChatRoom chatroom = ChatRoom(
-    //       id: _rooms.doc().id);
-    //   // result.add(chatroom);
-    // }
-    // for (int i = 0; i < result.length; i++) {
-    //   _rooms
-    //       .doc(
-    //         // "${Get.find<UserHandler>().box.read('id')}_${result[i].user}"
-    //       )
-    //       .collection('chats')
-    //       .orderBy('timestamp', descending: true)
-    //       .limit(1)
-    //       .snapshots()
-    //       .listen(
-    //     (event) {
-    //       for (int i = 0; i < event.docs.length; i++) {
-    //         var chat = event.docs[i].data();
-    //         returnResult.add(ChatList(
-    //             sender: chat['sender'],
-    //             text: chat['text'],
-    //             timestamp: chat['timestamp']));
-    //       }
-    //       // lastChats.value = returnResult;
-    //     },
-    //   );
-    // }
+  queryLastChat(List<ChatRoom> rooms) async {
+    for (int i = 0; i < rooms.length; i++) {
+    _rooms
+        .doc(rooms[i].id)
+        .snapshots()
+        .listen((DocumentSnapshot docSnapshot) {
+      if (docSnapshot.exists) {
+        List<dynamic> messages = docSnapshot.get('chats') ?? [];
+        if (messages.isNotEmpty) {
+          Map<String, dynamic> lastMessage = messages.last as Map<String, dynamic>;
+          ChatList chat = ChatList.fromMap(lastMessage, rooms[i].id);
+          int existingIndex = lastChats.indexWhere((c) => c.roomId == rooms[i].id);
+          if (existingIndex != -1) {
+            lastChats[existingIndex] = chat;
+          } else {
+            lastChats.add(chat);
+          }
+        }
+      } else {
+        lastChats.removeWhere((c) => c.roomId == rooms[i].id);
+      }
+    });
+     }
     update();
   }
+
   makeChatRoom() async {
     _rooms.snapshots().listen((event) {
       rooms.value = event.docs.map((doc) {
-        // 문서 데이터 가져오기
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-
         return ChatRoom(
           id: doc.id,
-          imagePath: data['image'] ?? "", // image 필드 값 가져오기
+          imagePath: data['image'] ?? "", 
         );
       }).toList();
     });
+    update();
   }
 
   isToday() async {

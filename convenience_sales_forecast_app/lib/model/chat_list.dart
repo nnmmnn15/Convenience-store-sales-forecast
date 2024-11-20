@@ -2,17 +2,21 @@ class ChatList {
   String text;
   String timestamp;
   String sender;
+  String roomId;
 
   ChatList({
     required this.text,
     required this.timestamp,
-    required this.sender
+    required this.sender,
+    required this.roomId,
   });
   
-  factory ChatList.fromMap(Map<String, dynamic> map, String id) {
+factory ChatList.fromMap(Map<String, dynamic> map, String roomId) {
     return ChatList(
-        sender: map['sender'] ?? '',
-        text: map['text'] ?? '',
-        timestamp: map['timestamp'] ?? '');
+      text: map['text'] ?? '',
+      timestamp: map['timestamp'] ?? '',
+      sender: map['sender'] ?? '',
+      roomId: roomId, // 방 ID 저장
+    );
   }
 }
