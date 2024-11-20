@@ -60,4 +60,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'convinience-15f72.firebasestorage.app',
     iosBundleId: 'com.example.convenienceSalesForecastApp',
   );
+
 }
