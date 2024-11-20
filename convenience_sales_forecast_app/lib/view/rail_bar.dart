@@ -1,12 +1,14 @@
 import 'package:convenience_sales_forecast_app/view/chat.dart';
 import 'package:convenience_sales_forecast_app/view/sales_history.dart';
 import 'package:convenience_sales_forecast_app/vm/tab_handler.dart';
+import 'package:convenience_sales_forecast_app/vm/user_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class RailBar extends StatelessWidget {
   RailBar({super.key});
   final TabHandler controller = Get.put(TabHandler());
+  final UserHandler userHandler = Get.put(UserHandler());
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +78,7 @@ class RailBar extends StatelessWidget {
   Widget _buildSelectedScreen(int selectedIndex) {
     switch (selectedIndex) {
       case 0:
-        return const Chat();
+        return Chat();
       case 1:
         return const SalesHistory();
       default:
