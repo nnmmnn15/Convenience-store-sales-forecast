@@ -1,10 +1,87 @@
+import 'package:convenience_sales_forecast_app/vm/user_handler.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
+import 'package:convenience_sales_forecast_app/view/rail_bar.dart';
+import 'package:convenience_sales_forecast_app/view/sign_up.dart';
 
 class Login extends StatelessWidget {
-  const Login({super.key});
+  final UserHandler userHandler = Get.put(UserHandler());
+  Login({super. key}) ;
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold();
+    return Scaffold(
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset('images/ai.png', height: 100),
+                const SizedBox(height: 48),
+                _buildTextField('아이디'),
+                const SizedBox(height: 16),
+                _buildTextField('비밀번호', isPassword: true),
+                const SizedBox(height: 24),
+                _buildButton('로그인', onPressed: () {
+                  // 일반 로그인 로직
+                }),
+                const SizedBox(height: 16),
+                _buildButton('Google로 로그인', onPressed: () async {
+                  try {
+                    UserCredential? userCredential = await userHandler.signInWithGoogle();
+                    if (userCredential != null) {
+                      Get.to(() => RailBar());
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Google 로그인 실패')),
+                      );
+                    }
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Google 로그인 중 오류 발생')),
+                    );
+                  }
+                }),
+                const SizedBox(height: 16),
+                TextButton(
+                  child: const Text('회원가입'),
+                  onPressed: () {
+                    Get.to(()=> const SignUp());
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(String label, {bool isPassword = false}) {
+    return TextField(
+      obscureText: isPassword,
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      ),
+    );
+  }
+
+  Widget _buildButton(String label, {required VoidCallback onPressed}) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+        ),
+        child: Text(label),
+      ),
+    );
   }
 }

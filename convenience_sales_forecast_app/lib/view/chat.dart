@@ -12,8 +12,6 @@ class Chat extends StatelessWidget {
   final ChatHandler chatsHandler = Get.put(ChatHandler());
   final userHandler = Get.find<UserHandler>();
   final TextEditingController chatController = TextEditingController();
-
-  // 선택된 채팅방 인덱스를 관리하는 상태 변수
   final RxInt selectedChatIndex = (-1).obs;
 
   @override
@@ -63,11 +61,11 @@ class Chat extends StatelessWidget {
                 return GestureDetector(
                   onTap: () async {
                     chatsHandler.setcurrentRoomId(room.id);
-                    // await chatsHandler.setcurrentUserId(room.user);
+                    // await chatsHandler.setcurrentUserId(room.userz);
                     // await chatsHandler.setcurrentRoomImage(room.image);
                     await chatsHandler.showChat();
                     await chatsHandler.queryChat(chatsHandler.currentRoomId.value);
-                    selectedChatIndex.value = index; // 선택된 채팅방 인덱스 업데이트
+                    selectedChatIndex.value = index;
                   },
                   child: Obx(() => Padding(
                         padding: const EdgeInsets.symmetric(
@@ -95,7 +93,7 @@ class Chat extends StatelessWidget {
                                 fontSize: 20, fontWeight: FontWeight.bold),
                             ),
                           ),
-            //               child: ListTile(
+            //               ListTile(
             //                 // leading: CircleAvatar(
             //                 //   backgroundImage: NetworkImage(room.image),
             //                 //   radius: 30,
@@ -138,35 +136,50 @@ class Chat extends StatelessWidget {
             ),
           ),
         )
-        
-      
-    );
+      );
   }))),
   Expanded(
-          flex: 5,
-          child: chatsHandler.chatShow.value
-              ? chatDetail(context,)
-              : const Center(child: Text('채팅을 선택하세요')),
-        ),]);
+    flex: 5,
+    child: chatsHandler.chatShow.value? 
+    chatDetail(context,):
+    const Center(child: Text('채팅을 선택하세요')),
+    ),]);
   }
-
   Widget chatDetail(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
-        // Container(
-        //   padding: const EdgeInsets.all(16),
-        //   child: Text(
-        //     chatsHandler.currentUserName.value,
-        //     style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        //   ),
-        // ),
-        Expanded(
-          child: chatList(context),
+        // 배경 이미지
+        Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+
+              image: AssetImage('images/ai.png'), // 배경 이미지 경로
+              fit: BoxFit.contain, // 이미지를 화면에 꽉 채움
+            ),
+          ),
         ),
-        chatInputField(context),
+        // 콘텐츠 (채팅 리스트와 입력 필드)
+        Column(
+          children: [
+            Expanded(
+              child: chatList(context),
+            ),
+            chatInputField(context),
+          ],
+        ),
       ],
     );
   }
+  // Widget chatDetail(BuildContext context) {
+  //   return Column(
+  //     children: [
+  //       Expanded(
+  //         child: chatList(context),
+  //       ),
+  //       chatInputField(context),
+  //     ],
+  //   );
+  // }
 
   Widget chatList(BuildContext context) {
     SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -196,23 +209,46 @@ class Chat extends StatelessWidget {
         bool isSender = chat.sender == userHandler.box.read('id');
         return Align(
           alignment: isSender ? Alignment.centerRight : Alignment.centerLeft,
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 5),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: isSender ? Colors.blueGrey[100] : Colors.green[100],
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Column(
-              crossAxisAlignment:
-                  isSender ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-              children: [
-                Text(chat.text, style: const TextStyle(fontSize: 16)),
-                const SizedBox(height: 4),
-                Text(chat.timestamp.substring(11, 16),
-                    style: const TextStyle(fontSize: 12, color: Colors.grey)),
-              ],
-            ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min, 
+            crossAxisAlignment: CrossAxisAlignment.end, 
+            children: isSender? [
+              Text(
+                chat.timestamp.substring(11, 16),
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+              const SizedBox(width: 4), 
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 5),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.green[100],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  chat.text,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+            ]:[
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 5),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blueGrey[100],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  chat.text,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                chat.timestamp.substring(11, 16), 
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            ]
           ),
         );
       },
@@ -257,12 +293,6 @@ class Chat extends StatelessWidget {
   inputChat() async {
     if (chatController.text.trim().isEmpty) return;
     ChatList newChat = ChatList(text: chatController.text.trim(), timestamp: DateTime.now().toString(), sender: userHandler.box.read('id'));
-    // (
-    //   reciever: chatsHandler.currentUserId.value,
-    //   sender: Get.find<LoginHandler>().box.read('id'),
-    //   text: chatController.text.trim(),
-    //   timestamp: DateTime.now().toString(),
-    // );
     await chatsHandler.addChat(newChat);
     chatController.clear();
   }

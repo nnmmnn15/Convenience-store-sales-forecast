@@ -15,7 +15,7 @@ class ChatHandler extends UserHandler {
   RxString currentRoomId = ''.obs;
   final CollectionReference _rooms =
       FirebaseFirestore.instance.collection('chat');
-
+ 
 
 
   getAllData() async {
@@ -28,16 +28,6 @@ class ChatHandler extends UserHandler {
 
   setcurrentRoomId(String roomid) {
     currentRoomId.value = roomid;
-    update();
-  }
-
-
-  setcurrentClinicName(String id) async {
-    var url =
-        Uri.parse('http://127.0.0.1:8000/clinic/select_clinic_name?name=$id');
-    var response = await http.get(url);
-    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-   
     update();
   }
 
@@ -139,11 +129,11 @@ class ChatHandler extends UserHandler {
   addChat(ChatList chat) async {
     bool istoday = await isToday();
     if (!istoday) {
-      await _rooms.doc("$currentRoomId").collection('chats').add({
-        'sender': chat.sender,
-        'text': "set${DateTime.now().toString().substring(0, 10)}time",
-        'timestamp': DateTime.now().toString(),
-      });
+      await _rooms.doc("$currentRoomId").update({'chats':FieldValue.arrayUnion([
+      {'sender': chat.sender,
+      'text': chat.text,
+      'timestamp': DateTime.now().toString()}
+    ])});
     }
     _rooms
       .doc("$currentRoomId").update({'chats':FieldValue.arrayUnion([
