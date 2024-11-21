@@ -58,6 +58,7 @@ class SalesHistory extends StatelessWidget {
                                 .cast<num>()
                                 .map((e) => e.toDouble())
                                 .toList();
+                            mapHandler.footTraffic();
                           },
                           child: Obx(
                             () => Card(
@@ -83,7 +84,7 @@ class SalesHistory extends StatelessWidget {
                                           fontWeight: FontWeight.bold),
                                     ),
                                     Text(
-                                      '예상 매출 : ${storeInfo.salesResult}원',
+                                      '예상 매출 : ${mapHandler.wirteSale(storeInfo.salesResult)}원',
                                       style: const TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold),
@@ -133,7 +134,7 @@ class SalesHistory extends StatelessWidget {
                   children: [
                     ElevatedButton(
                         onPressed: () => mapHandler.updateHistory(storeInfo),
-                        child: const Text('변경하기')),
+                        child: const Text('적용')),
                   ],
                 ),
                 Container(
@@ -162,7 +163,8 @@ class SalesHistory extends StatelessWidget {
                                       Column(
                                         children: [
                                           Text('${(index + 1) * 10}대 유동인구 수'),
-                                          Text('100% = !!인구수'),
+                                          Text(
+                                              '100% = ${mapHandler.peoplesList[index]}'),
                                         ],
                                       ),
                                     ],
@@ -171,9 +173,9 @@ class SalesHistory extends StatelessWidget {
                                     activeColor: Colors.blue,
                                     thumbColor: Colors.red,
                                     value: mapHandler.feature1[index],
-                                    min: 70,
-                                    max: 150,
-                                    divisions: 80,
+                                    min: 90,
+                                    max: 110,
+                                    divisions: 20,
                                     onChanged: (value) {
                                       mapHandler.feature1[index] = value;
                                     },
@@ -199,7 +201,8 @@ class SalesHistory extends StatelessWidget {
                                       Column(
                                         children: [
                                           Text('${(index + 4) * 10}대 유동인구 수'),
-                                          Text('100% = !!인구수'),
+                                          Text(
+                                              '100% = ${mapHandler.peoplesList[index]}'),
                                         ],
                                       ),
                                     ],
@@ -208,9 +211,9 @@ class SalesHistory extends StatelessWidget {
                                     activeColor: Colors.blue,
                                     thumbColor: Colors.red,
                                     value: mapHandler.feature1[index + 3],
-                                    min: 70,
-                                    max: 150,
-                                    divisions: 80,
+                                    min: 90,
+                                    max: 110,
+                                    divisions: 20,
                                     onChanged: (value) {
                                       mapHandler.feature1[index + 3] = value;
                                     },

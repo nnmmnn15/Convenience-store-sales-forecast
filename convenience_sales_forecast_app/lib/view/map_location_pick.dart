@@ -15,6 +15,7 @@ class MapLocationPick extends StatelessWidget {
 
     mapHandler.isPicked.value = false;
     return Scaffold(
+      // resizeToAvoidBottomInset: false,
       body: Center(
         child: Stack(
           children: [
@@ -122,7 +123,7 @@ class MapLocationPick extends StatelessWidget {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          '${mapHandler.salesForecast}',
+                                          '${mapHandler.wirteSale(mapHandler.salesForecast)}원',
                                           style: const TextStyle(
                                             fontSize: 28,
                                             fontWeight: FontWeight.bold,

@@ -40,14 +40,14 @@ async def storeCount(lat: float=None, lng: float=None):
 
 
 @app.get("/calculate")
-async def calculate(teen: float = 1, twen:float = 1, thrity : float = 1, forty : float = 1, fifty : float = 1, lat : float=None, lng: float=None):
+async def calculate(teen: float = 1, twen:float = 1, thirty : float = 1, forty : float = 1, fifty : float = 1, lat : float=None, lng: float=None):
     dongName = getDongName(lat, lng, hdongs)
 
     dongNameReal =  dongName.ADSTRD_NM.values[0]
 
     pops_raw = maybe[(maybe['기준_년분기_코드'] == 20242) & (maybe['행정동_코드_명'] == dongNameReal)].iloc[:, 4:-1]
 
-    pops = pops_raw * [teen, twen, thrity, forty, fifty]
+    pops = pops_raw * [teen, twen, thirty, forty, fifty]
 
     # print(pops_raw)
     
@@ -55,13 +55,24 @@ async def calculate(teen: float = 1, twen:float = 1, thrity : float = 1, forty :
 
     # print(sales[0])
     return {
-                "message" : round(sales, 3),
+                "message" : int(sales),
                 "pops" : list(pops_raw.iloc[0, :])
             
             }
 
+@app.get("/people_count")
+async def calculate(lat : float=None, lng: float=None):
+    dongName = getDongName(lat, lng, hdongs)
+
+    dongNameReal =  dongName.ADSTRD_NM.values[0]
+
+    pops_raw = maybe[(maybe['기준_년분기_코드'] == 20242) & (maybe['행정동_코드_명'] == dongNameReal)].iloc[:, 4:-1]
+    return {"pops" : list(pops_raw.iloc[0, :])}
+
+
+
 @app.get("/all")
-async def all(teen: float = 1, twen:float = 1, thrity : float = 1, forty : float = 1, fifty : float = 1, lat : float=None, lng: float=None):
+async def all(teen: float = 1, twen:float = 1, thirty : float = 1, forty : float = 1, fifty : float = 1, lat : float=None, lng: float=None):
     dong = getDongName(lat, lng, hdongs)
     convs_in_dong = getStoreCount(convs, dong)
     
@@ -70,7 +81,7 @@ async def all(teen: float = 1, twen:float = 1, thrity : float = 1, forty : float
     polygon= getDongPoly(dong)
 
     pops_raw = maybe[(maybe['기준_년분기_코드'] == 20242) & (maybe['행정동_코드_명'] == dongNameReal)].iloc[:, 4:-1]
-    pops = pops_raw * [teen, twen, thrity, forty, fifty]
+    pops = pops_raw * [teen, twen, thirty, forty, fifty]
     
     count = convs_in_dong.shape[0]
     lat_lngs = [(lat, lng) for lat, lng in zip(convs_in_dong['lat'], convs_in_dong['lng'])]
