@@ -241,7 +241,7 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
     return formatted;
   }
 
-  // 전분기 유동인구
+  // 이전 분기 유동인구 수
   Future<void> footTraffic() async {
     var url = Uri.parse(
         "$defaultUrl/people_count?lat=${selectLatLng.value.latitude}&lng=${selectLatLng.value.longitude}");
