@@ -208,6 +208,21 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
     }
   }
 
+  // 타지역 매출 예측
+  Future<void> otherForecast() async {
+    var url = Uri.parse(
+        "$defaultUrl/other_place?teen=${feature1[0] / 100}&twen=${feature1[1] / 100}&thirty=${feature1[2] / 100}&forty=${feature1[3] / 100}&fifty=${feature1[4] / 100}");
+    final response = await http.get(url); // GET 요청
+    if (response.statusCode == 200) {
+      // 성공적으로 응답을 받았을 때
+      String decodedBody = utf8.decode(response.bodyBytes);
+      final data = json.decode(decodedBody);
+      print(data);
+      // salesForecast.value = data['message'];
+      // peoplesList.value = (data['pops'] as List<dynamic>).cast<int>();
+    }
+  }
+
   // 매출 표기
   String wirteSale(sale) {
     // 숫자를 문자열로 변환 후 뒤에서부터 쉼표 추가

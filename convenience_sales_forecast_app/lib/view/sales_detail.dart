@@ -81,6 +81,7 @@ class SalesDetail extends StatelessWidget {
                   onPressed: () {
                     // 전송 함수
                     mapHandler.forecast();
+                    mapHandler.otherForecast();
                   },
                   child: const Text('적용'),
                 ),

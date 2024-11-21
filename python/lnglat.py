@@ -46,12 +46,8 @@ def getStoreCount(convs, hdongs_2):
     # !
     return (gpd.sjoin(convs_gdf, hdongs_2, how='inner',  predicate='within'))
 
-
-
-
-def getStoreSales(pops, hdongs_2): 
-
-    loaded_model = joblib.load(f'data/ai_models/lr_model_{hdongs_2.ADSTRD_NM.values[0]}.joblib')
+def getStoreSales(pops, dongName): 
+    loaded_model = joblib.load(f'data/ai_models/lr_model_{dongName}.joblib')
     meta = pd.read_csv('data/ai_models/meta.csv', index_col=0)
     # print(hdongs_2.ADSTRD_NM.values[0])
-    return (loaded_model.predict(pops)/ meta.loc[:,hdongs_2.ADSTRD_NM.values[0]].iloc[-1])
+    return (loaded_model.predict(pops)/ meta.loc[:,dongName].iloc[-1])
