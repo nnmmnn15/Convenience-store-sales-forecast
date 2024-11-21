@@ -2,6 +2,7 @@ import geopandas as gpd
 from shapely.geometry import Point, mapping
 
 import pandas as pd
+import joblib
 
 def getDongName(lat, lng, hdongs):
     
@@ -32,8 +33,8 @@ def getDongPoly(hdongs_2):
     return({"polygon": polygon_json})
 
 
-def getStoreCount(hdongs_2):
-    convs =  pd.read_csv('data/convs.csv', index_col=0)
+def getStoreCount(convs, hdongs_2):
+
     # Point 객체 생성
     geometry = [Point(xy) for xy in zip(convs['lng'], convs['lat'])]
 
@@ -43,5 +44,14 @@ def getStoreCount(hdongs_2):
 
     #### 편의점 수
     # !
-    return (gpd.sjoin(convs_gdf, hdongs_2, how='inner',  predicate='within').shape[0])
+    return (gpd.sjoin(convs_gdf, hdongs_2, how='inner',  predicate='within'))
 
+
+
+
+def getStoreSales(pops, hdongs_2): 
+
+    loaded_model = joblib.load(f'data/ai_models/lr_model_{hdongs_2.ADSTRD_NM.values[0]}.joblib')
+    meta = pd.read_csv('data/ai_models/meta.csv', index_col=0)
+    print(hdongs_2.ADSTRD_NM.values[0])
+    return (loaded_model.predict(pops)/ meta.loc[:,hdongs_2.ADSTRD_NM.values[0]].iloc[-1])
