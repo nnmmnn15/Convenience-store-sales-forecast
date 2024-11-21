@@ -10,92 +10,124 @@ class SalesDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          children: [
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () => mapHandler.detailStateSwitch(),
-                  icon: const Icon(Icons.close),
-                )
-              ],
-            ),
-            Obx(
-              () => Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+      // resizeToAvoidBottomInset: false,
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            children: [
+              Row(
                 children: [
-                  // 함수화 가능
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.2,
-                    child: Column(
+                  IconButton(
+                    onPressed: () => mapHandler.detailStateSwitch(),
+                    icon: const Icon(Icons.close),
+                  )
+                ],
+              ),
+              const Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Row(
+                  children: [
+                    Text(
+                      '이전 분기 나이대별 유동인구',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Obx(
+                () => Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: List.generate(5, (index) {
+                    return Column(
                       children: [
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Text('특성 1'),
-                            Text('범위'),
+                            Column(
+                              children: [
+                                Text('${(index + 1) * 10}대 유동인구 수'),
+                                Text('100% = ${mapHandler.peoplesList[index]}'),
+                              ],
+                            ),
                           ],
                         ),
                         Slider(
-                          activeColor: Colors.blue, // 선택 영역 색
-                          // inactiveColor: Colors.green, // 빈 영역 색
-                          thumbColor: Colors.red, // 동그라미 색
-                          value: mapHandler.feature1.value,
-                          // !!최대 최소 변경
-                          min: 0,
-                          max: 100,
-                          divisions: 100,
+                          activeColor: Colors.blue,
+                          thumbColor: Colors.red,
+                          value: mapHandler.feature1[index],
+                          min: 90,
+                          max: 110,
+                          divisions: 20,
                           onChanged: (value) {
-                            mapHandler.feature1.value = value;
+                            mapHandler.feature1[index] = value;
+                            // setState(() {
+                            //   mapHandler.feature1[index] = value;
+                            // });
                           },
                         ),
-                        Text(mapHandler.feature1.value.toInt().toString()),
+                        Text('${mapHandler.feature1[index].toInt()}%'),
+                        // SizedBox(height: 20), // 각 슬라이더 사이의 간격
                       ],
-                    ),
+                    );
+                  }),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    // 전송 함수
+                    mapHandler.forecast();
+                    mapHandler.otherForecast();
+                  },
+                  child: const Text('적용'),
+                ),
+              ),
+              // !!매출
+              Obx(
+                () => Text(
+                  '해당 지역 편의점 개점시 예상 매출은 \n ${mapHandler.wirteSale(mapHandler.salesForecast)}원',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Container(
+                    color: Colors.blue,
+                    width: MediaQuery.of(context).size.width * 0.35,
+                    height: MediaQuery.of(context).size.height * 0.3,
+                    child: const Text('차트1'),
+                  ),
+                  Container(
+                    color: Colors.blue,
+                    width: MediaQuery.of(context).size.width * 0.35,
+                    height: MediaQuery.of(context).size.height * 0.3,
+                    child: const Text('차트2'),
                   ),
                 ],
               ),
-            ),
-            const Text(
-              '해당 지역 편의점 개점시 예상 매출은 \n 1,475,438,000₩ ~ 1,682,438,000₩  입니다.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Container(
-                  color: Colors.blue,
-                  width: MediaQuery.of(context).size.width * 0.35,
-                  height: MediaQuery.of(context).size.height * 0.35,
-                  child: const Text('차트1'),
-                ),
-                Container(
-                  color: Colors.blue,
-                  width: MediaQuery.of(context).size.width * 0.35,
-                  height: MediaQuery.of(context).size.height * 0.35,
-                  child: const Text('차트2'),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    //
-                    inputAlert();
-                    //
-                  },
-                  child: const Text('저장'),
-                ),
-              ],
-            )
-          ],
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      inputAlert();
+                    },
+                    child: const Text('저장'),
+                  ),
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );

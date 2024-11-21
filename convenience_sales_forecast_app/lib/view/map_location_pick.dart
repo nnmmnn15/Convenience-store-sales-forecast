@@ -15,6 +15,7 @@ class MapLocationPick extends StatelessWidget {
 
     mapHandler.isPicked.value = false;
     return Scaffold(
+      // resizeToAvoidBottomInset: false,
       body: Center(
         child: Stack(
           children: [
@@ -122,15 +123,23 @@ class MapLocationPick extends StatelessWidget {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          '${mapHandler.salesForecast}',
+                                          '${mapHandler.wirteSale(mapHandler.salesForecast)}원',
                                           style: const TextStyle(
                                             fontSize: 28,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                         ElevatedButton(
-                                            onPressed: () =>
-                                                mapHandler.detailStateSwitch(),
+                                            onPressed: () {
+                                              mapHandler.detailStateSwitch();
+                                              mapHandler.feature1.value = [
+                                                100,
+                                                100,
+                                                100,
+                                                100,
+                                                100
+                                              ];
+                                            },
                                             child: const Text('환경 변경하기'))
                                       ],
                                     )

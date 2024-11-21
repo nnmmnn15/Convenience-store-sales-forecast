@@ -17,59 +17,56 @@ class MypageEdit extends StatelessWidget {
 
   final UserHandler userHandler = Get.find();
   final TextEditingController nameController = TextEditingController(
-    text:Get.find<UserHandler>().currentUser.value!.name
-  );
+      text: Get.find<UserHandler>().currentUser.value!.name);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          '내 정보 수정',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
+        appBar: AppBar(
+          title: const Text(
+            '내 정보 수정',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
           ),
+          foregroundColor: Colors.white,
+          backgroundColor: Colors.blueGrey,
         ),
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.blueGrey,
-      ),
-      body: GetBuilder<UserHandler>(builder: (_) {
-        return FutureBuilder(
-          future:userHandler.getMyInfo(userHandler.box.read('userEmail')),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('${snapshot.error}'));
-            } else {
-              return Obx(() {
-                final result = userHandler.currentUser;
-                return SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      _buildProfileSection(context, result.value!),
-                      _buildInfoSection(result.value!, context),
-                      const Divider(
-                        color: Colors.grey,
-                        thickness: 1,
-                        indent: 16,
-                        endIndent: 16
-                      ),
-                      _buildActionButtons(context, result.value!),
-                    ],
-                  ),
-                );
-              });
-            }
-          },
-        );}
-      )
-    );
+        body: GetBuilder<UserHandler>(builder: (_) {
+          return FutureBuilder(
+            future: userHandler.getMyInfo(userHandler.box.read('userEmail')),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('${snapshot.error}'));
+              } else {
+                return Obx(() {
+                  final result = userHandler.currentUser;
+                  return SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        _buildProfileSection(context, result.value!),
+                        _buildInfoSection(result.value!, context),
+                        const Divider(
+                            color: Colors.grey,
+                            thickness: 1,
+                            indent: 16,
+                            endIndent: 16),
+                        _buildActionButtons(context, result.value!),
+                      ],
+                    ),
+                  );
+                });
+              }
+            },
+          );
+        }));
   }
 
   _buildProfileSection(BuildContext context, Users currentUser) {
     return Container(
-      height: MediaQuery.of(context).size.height/4,
+      height: MediaQuery.of(context).size.height / 4,
       padding: const EdgeInsets.symmetric(vertical: 20),
       color: Colors.green.shade50,
       child: Center(
@@ -87,21 +84,20 @@ class MypageEdit extends StatelessWidget {
             ),
             GestureDetector(
               onTap: () => changeImage(context),
-              child: userHandler.firstDisp.value == 0 ?
-              CircleAvatar(
-                radius: 60,
-                backgroundImage:
-                 NetworkImage(  
-                  currentUser.image 
-                )
-              ):
-              userHandler.imgFile == null?
-                const Text('Image not found'):
-                CircleAvatar(
-                radius: MediaQuery.of(context).size.width / 20, // 너비에 따라 반지름 조정
-                backgroundImage: FileImage(File(userHandler.imgFile!.path)), // 이미지 파일 설정
-                backgroundColor: Colors.grey[200], // 이미지가 없을 때의 배경색 (옵션)
-              ),
+              child: userHandler.firstDisp.value == 0
+                  ? CircleAvatar(
+                      radius: 60,
+                      backgroundImage: NetworkImage(currentUser.image))
+                  : userHandler.imgFile == null
+                      ? const Text('Image not found')
+                      : CircleAvatar(
+                          radius: MediaQuery.of(context).size.width /
+                              20, // 너비에 따라 반지름 조정
+                          backgroundImage: FileImage(
+                              File(userHandler.imgFile!.path)), // 이미지 파일 설정
+                          backgroundColor:
+                              Colors.grey[200], // 이미지가 없을 때의 배경색 (옵션)
+                        ),
             ),
           ],
         ),
@@ -157,33 +153,31 @@ class MypageEdit extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        label == '이름'? 
-        SizedBox(
-          width: MediaQuery.of(context).size.width / 7,
-          child: TextField(
-            controller: nameController,
-            style: const TextStyle(
-              fontSize: 16, 
-            ),
-            decoration: const InputDecoration(
-              isDense: true, 
-              contentPadding: EdgeInsets.symmetric(vertical: 8.0),
-            ),
-          ),
-        )
-      : Text(
-          value,
-          style: const TextStyle(
-            fontSize: 16,
-          ),
-        ),
+        label == '이름'
+            ? SizedBox(
+                width: MediaQuery.of(context).size.width / 7,
+                child: TextField(
+                  controller: nameController,
+                  style: const TextStyle(
+                    fontSize: 16,
+                  ),
+                  decoration: const InputDecoration(
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(vertical: 8.0),
+                  ),
+                ),
+              )
+            : Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 16,
+                ),
+              ),
       ],
     );
   }
 
-
-  _buildActionButtons(
-    BuildContext context, Users currentUser) {
+  _buildActionButtons(BuildContext context, Users currentUser) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
@@ -242,14 +236,14 @@ class MypageEdit extends StatelessWidget {
     );
   }
 
-  changeImage(context){
+  changeImage(context) {
     showCupertinoModalPopup(
       context: context,
       barrierDismissible: true,
       builder: (context) => CupertinoActionSheet(
         actions: [
           CupertinoActionSheetAction(
-            onPressed: () async{
+            onPressed: () async {
               Get.back();
               await userHandler.getImageFromGalleryEdit(ImageSource.gallery);
             },
@@ -258,21 +252,20 @@ class MypageEdit extends StatelessWidget {
             ),
           ),
           CupertinoActionSheetAction(
-            onPressed: () async{
+            onPressed: () async {
               await userHandler.deleteProfileImage();
               Get.back();
             },
             child: const Text(
-            '프로필 사진 삭제',
+              '프로필 사진 삭제',
             ),
           ),
         ],
         cancelButton: CupertinoActionSheetAction(
-          onPressed: () => Get.back(),
-          child: const Text(
-            '취소',
-          )
-        ),
+            onPressed: () => Get.back(),
+            child: const Text(
+              '취소',
+            )),
       ),
     );
   }

@@ -10,7 +10,7 @@ class StoreHistory {
   double lat;
   double lng;
   int salesResult;
-  int features;
+  List features;
   String updatetime;
 
   StoreHistory({

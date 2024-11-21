@@ -54,8 +54,11 @@ class SalesHistory extends StatelessWidget {
                             }
                             mapHandler.selectedIndex.value = index;
                             mapHandler.selectedStore.value = true;
-                            mapHandler.feature1.value =
-                                storeInfo.features.toDouble();
+                            mapHandler.feature1.value = storeInfo.features
+                                .cast<num>()
+                                .map((e) => e.toDouble())
+                                .toList();
+                            mapHandler.footTraffic();
                           },
                           child: Obx(
                             () => Card(
@@ -81,7 +84,7 @@ class SalesHistory extends StatelessWidget {
                                           fontWeight: FontWeight.bold),
                                     ),
                                     Text(
-                                      '예상 매출 : ${storeInfo.salesResult}원',
+                                      '예상 매출 : ${mapHandler.wirteSale(storeInfo.salesResult)}원',
                                       style: const TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold),
@@ -131,7 +134,7 @@ class SalesHistory extends StatelessWidget {
                   children: [
                     ElevatedButton(
                         onPressed: () => mapHandler.updateHistory(storeInfo),
-                        child: const Text('변경하기')),
+                        child: const Text('적용')),
                   ],
                 ),
                 Container(
@@ -144,43 +147,83 @@ class SalesHistory extends StatelessWidget {
                       topRight: Radius.circular(25),
                     ),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  child: SingleChildScrollView(
+                    child: Column(
                       children: [
-                        // 함수화 가능
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.2,
-                          child: Column(
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 20),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('특성 1'),
-                                    Text('범위'),
-                                  ],
-                                ),
-                              ),
-                              Slider(
-                                activeColor: Colors.blue, // 선택 영역 색
-                                // inactiveColor: Colors.green, // 빈 영역 색
-                                thumbColor: Colors.red, // 동그라미 색
-                                value: mapHandler.feature1.value,
-                                // !!최대 최소 변경
-                                min: 0,
-                                max: 100,
-                                divisions: 100,
-                                onChanged: (value) {
-                                  mapHandler.feature1.value = value;
-                                },
-                              ),
-                              Text(
-                                  mapHandler.feature1.value.toInt().toString()),
-                            ],
+                        Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: List.generate(3, (index) {
+                              return Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Column(
+                                        children: [
+                                          Text('${(index + 1) * 10}대 유동인구 수'),
+                                          Text(
+                                              '100% = ${mapHandler.peoplesList[index]}'),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  Slider(
+                                    activeColor: Colors.blue,
+                                    thumbColor: Colors.red,
+                                    value: mapHandler.feature1[index],
+                                    min: 90,
+                                    max: 110,
+                                    divisions: 20,
+                                    onChanged: (value) {
+                                      mapHandler.feature1[index] = value;
+                                    },
+                                  ),
+                                  Text(
+                                      '${mapHandler.feature1[index].toInt()}%'),
+                                  // SizedBox(height: 20), // 각 슬라이더 사이의 간격
+                                ],
+                              );
+                            }),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: List.generate(2, (index) {
+                              return Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Column(
+                                        children: [
+                                          Text('${(index + 4) * 10}대 유동인구 수'),
+                                          Text(
+                                              '100% = ${mapHandler.peoplesList[index]}'),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  Slider(
+                                    activeColor: Colors.blue,
+                                    thumbColor: Colors.red,
+                                    value: mapHandler.feature1[index + 3],
+                                    min: 90,
+                                    max: 110,
+                                    divisions: 20,
+                                    onChanged: (value) {
+                                      mapHandler.feature1[index + 3] = value;
+                                    },
+                                  ),
+                                  Text(
+                                      '${mapHandler.feature1[index + 3].toInt()}%'),
+                                  // SizedBox(height: 20), // 각 슬라이더 사이의 간격
+                                ],
+                              );
+                            }),
                           ),
                         ),
                       ],

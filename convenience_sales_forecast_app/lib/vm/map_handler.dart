@@ -32,9 +32,8 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
   late Animation<Offset> offsetAnimation;
 
   // 상세 보기 변경 값
-  final feature1 = 0.0.obs;
-  final feature2 = 0.0.obs;
-  final feature3 = 0.0.obs;
+  final peoplesList = <int>[0, 0, 0, 0, 0].obs;
+  final feature1 = <double>[100, 100, 100, 100, 100].obs;
 
   // 이름 입력 텍스트 필드
   final TextEditingController textEditingController = TextEditingController();
@@ -76,8 +75,6 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
   @override
   void onInit() {
     super.onInit();
-    // 초기값 신촌동
-    // bound = shinchonBounds;
 
     // 행정동 이름 가져오기
     getLoc();
@@ -102,10 +99,8 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
     ever(isDetail, (bool showDetail) {
       if (showDetail) {
         animationController.forward();
-        print(1);
       } else {
         animationController.reverse();
-        print(2);
       }
     });
   }
@@ -113,7 +108,6 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
   @override
   void onClose() {
     animationController.dispose();
-    print(10);
     super.onClose();
   }
 
@@ -146,6 +140,7 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
     await getPolygon();
     await getDongName();
     await getStoreCount();
+    await forecast();
     // isPicked.value = !isPicked.value;
     // * 예상 매출액을 불러오는 코드 api * //
     // if (isPicked.value) {}
@@ -196,6 +191,59 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
     }
   }
 
+  // 매출 예측
+  Future<void> forecast() async {
+    var url = (isDetail.value || selectedStore.value)
+        ? Uri.parse(
+            "$defaultUrl/calculate?teen=${feature1[0] / 100}&twen=${feature1[1] / 100}&thirty=${feature1[2] / 100}&forty=${feature1[3] / 100}&fifty=${feature1[4] / 100}&lat=${selectLatLng.value.latitude}&lng=${selectLatLng.value.longitude}")
+        : Uri.parse(
+            "$defaultUrl/calculate?lat=${selectLatLng.value.latitude}&lng=${selectLatLng.value.longitude}");
+    final response = await http.get(url); // GET 요청
+    if (response.statusCode == 200) {
+      // 성공적으로 응답을 받았을 때
+      String decodedBody = utf8.decode(response.bodyBytes);
+      final data = json.decode(decodedBody);
+      salesForecast.value = data['message'];
+      peoplesList.value = (data['pops'] as List<dynamic>).cast<int>();
+    }
+  }
+
+  // 타지역 매출 예측
+  Future<void> otherForecast() async {
+    var url = Uri.parse(
+        "$defaultUrl/other_place?teen=${feature1[0] / 100}&twen=${feature1[1] / 100}&thirty=${feature1[2] / 100}&forty=${feature1[3] / 100}&fifty=${feature1[4] / 100}");
+    final response = await http.get(url); // GET 요청
+    if (response.statusCode == 200) {
+      // 성공적으로 응답을 받았을 때
+      String decodedBody = utf8.decode(response.bodyBytes);
+      final data = json.decode(decodedBody);
+      print(data);
+      // salesForecast.value = data['message'];
+      // peoplesList.value = (data['pops'] as List<dynamic>).cast<int>();
+    }
+  }
+
+  // 매출 표기
+  String wirteSale(sale) {
+    // 숫자를 문자열로 변환 후 뒤에서부터 쉼표 추가
+    String formatted = sale.toString().replaceAllMapped(
+        RegExp(r'(\d)(?=(\d{3})+$)'), (Match match) => '${match[1]},');
+    return formatted;
+  }
+
+  // 전분기 유동인구
+  Future<void> footTraffic() async {
+    var url = Uri.parse(
+        "$defaultUrl/people_count?lat=${selectLatLng.value.latitude}&lng=${selectLatLng.value.longitude}");
+    final response = await http.get(url); // GET 요청
+    if (response.statusCode == 200) {
+      // 성공적으로 응답을 받았을 때
+      String decodedBody = utf8.decode(response.bodyBytes);
+      final data = json.decode(decodedBody);
+      peoplesList.value = (data['pops'] as List<dynamic>).cast<int>();
+    }
+  }
+
   void detailStateSwitch() {
     isDetail.value = !isDetail.value;
   }
@@ -214,8 +262,8 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
       'alias': textEditingController.text,
       'lat': selectLatLng.value.latitude,
       'lng': selectLatLng.value.longitude,
-      'salesResult': 12340000,
-      'features': feature1.toInt(),
+      'salesResult': salesForecast.value,
+      'features': feature1,
       'updatetime': now.toString(),
     });
   }
@@ -234,14 +282,15 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
     });
   }
 
-  void updateHistory(StoreHistory storeInfo) {
+  void updateHistory(StoreHistory storeInfo) async {
+    await forecast();
     history.doc(storeInfo.docId).set({
       'email': storeInfo.email,
       'alias': storeInfo.alias,
       'lat': storeInfo.lat,
       'lng': storeInfo.lng,
-      'salesResult': storeInfo.salesResult,
-      'features': feature1.value.toInt(),
+      'salesResult': salesForecast.value,
+      'features': feature1,
       'updatetime': storeInfo.updatetime,
     });
   }
