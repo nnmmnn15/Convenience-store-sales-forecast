@@ -18,9 +18,11 @@ class ChatHandler extends UserHandler {
   final rooms = <ChatRoom>[].obs;
   final lastChats = <ChatList>[].obs;
   ScrollController listViewContoller = ScrollController();
-  RxBool chatShow = false.obs;
-  RxString currentRoomId = 'Anam'.obs;
-  RxDouble opacity = 1.0.obs;
+  final RxBool chatShow = false.obs;
+  final RxString currentRoomId = 'Anam'.obs;
+  final RxString currentRoomName = ''.obs;
+  final RxDouble opacity = 1.0.obs;
+  final RxInt selectedChatIndex = (-1).obs;
   final CollectionReference _rooms =
       FirebaseFirestore.instance.collection('chat');
   Timer? _timer;
@@ -66,10 +68,17 @@ class ChatHandler extends UserHandler {
     update();
   }
 
+  // 방 클릭시 클릭한 방의 Name 갱신
+  setcurrentRoomName(String roomName) {
+    currentRoomName.value = roomName;
+    update();
+  }
+
   // 방 클릭하지 않으면 채팅방 안보여주기 및 배경 이미지 투명도 조정
-  showChat() async {
+  showChat(int index) async {
     chatShow.value = true;
     opacity.value = 0.25;
+    selectedChatIndex.value = index;
     update();
   }
 
@@ -145,7 +154,8 @@ class ChatHandler extends UserHandler {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
         return ChatRoom(
           id: doc.id,
-          imagePath: data['image'] ?? "", 
+          imagePath: data['image'] ?? "",
+          roomName: data['roomname']
         );
       }).toList();
     });

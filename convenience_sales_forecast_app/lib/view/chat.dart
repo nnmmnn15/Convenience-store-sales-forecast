@@ -18,7 +18,6 @@ class Chat extends StatelessWidget {
   final ChatHandler chatsHandler = Get.put(ChatHandler());
   final userHandler = Get.find<UserHandler>();
   final TextEditingController chatController = TextEditingController();
-  final RxInt selectedChatIndex = (-1).obs;
 
   @override
   Widget build(BuildContext context) {
@@ -67,60 +66,66 @@ class Chat extends StatelessWidget {
                 return GestureDetector(
                   onTap: () async {
                     await chatsHandler.setcurrentRoomId(room.id);
+                    await chatsHandler.setcurrentRoomName(room.roomName);
                     await chatsHandler.queryChat(chatsHandler.currentRoomId.value);
-                    await chatsHandler.showChat();
-                    selectedChatIndex.value = index;
+                    await chatsHandler.showChat(index);
                   },
                   child: Obx(() => Padding(
                       padding: const EdgeInsets.symmetric(
                         vertical: 8.0, horizontal: 12.0
                       ),
-                      child: Card(
-                        color: Colors.grey[200],
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                          side: BorderSide(
-                            color: selectedChatIndex.value == index
-                            ? Colors.blue // 선택된 항목의 테두리 색상 변경
-                            : Colors.transparent,
-                            width: 2.0,
-                          ),
-                        ),
-                        elevation: 3,
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundImage: NetworkImage(room.imagePath),
-                            radius: 30,
-                          ),
-                          title: Text(
-                            room.id == 'Anam' ? '안암동 점주들 모임' : '신촌동 점주들 모임',
-                            style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: index < chatsHandler.lastChats.length
-                          ? Text(
-                            chatsHandler.lastChats[index].text,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 14, color: Colors.grey),
-                          )
-                          : const Text('채팅이 없습니다.',
-                            style: TextStyle(
-                              fontSize: 14, color: Colors.grey
-                            )
-                          ),
-                          trailing: index < chatsHandler.lastChats.length? 
-                          Text(
-                            DateTime.now().difference(DateTime.parse(
-                              chatsHandler.lastChats[index].timestamp)) <
-                              const Duration(hours: 24) ?
-                              chatsHandler.lastChats[index].timestamp.substring(11, 16):
-                                "${chatsHandler.lastChats[index].timestamp.substring(5, 7)}월 ${chatsHandler.lastChats[index].timestamp.substring(8, 10)}일",
-                            style: const TextStyle(
-                              fontSize: 12, color: Colors.grey
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height/9,
+                        child: Card(
+                          color: Colors.grey[200],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            side: BorderSide(
+                              color: chatsHandler.selectedChatIndex.value == index
+                              ? Colors.blue // 선택된 항목의 테두리 색상 변경
+                              : Colors.transparent,
+                              width: 2.0,
                             ),
-                          ): null,
+                          ),
+                          elevation: 3,
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundImage: NetworkImage(room.imagePath),
+                              radius: 30,
+                            ),
+                            title: Text(
+                              room.roomName,
+                              style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: index < chatsHandler.lastChats.length
+                            ? Text(
+                              chatsHandler.lastChats[index].text,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 16, color: Colors.grey),
+                            )
+                            : const Text('채팅이 없습니다.',
+                              style: TextStyle(
+                                fontSize: 14, color: Colors.grey
+                              )
+                            ),
+                            trailing: index < chatsHandler.lastChats.length? 
+                            Padding(
+                              padding: const EdgeInsets.only(top:20.0),
+                              child: Text(
+                                DateTime.now().difference(DateTime.parse(
+                                  chatsHandler.lastChats[index].timestamp)) <
+                                  const Duration(hours: 24) ?
+                                  chatsHandler.lastChats[index].timestamp.substring(11, 16):
+                                    "${chatsHandler.lastChats[index].timestamp.substring(5, 7)}월 ${chatsHandler.lastChats[index].timestamp.substring(8, 10)}일",
+                                style: const TextStyle(
+                                  fontSize: 13, color: Colors.grey
+                                ),
+                              ),
+                            ): null,
+                          ),
                         ),
                       ),
                     )
@@ -163,7 +168,7 @@ class Chat extends StatelessWidget {
               width: double.infinity, // 가로로 꽉 채우기
               padding: const EdgeInsets.symmetric(vertical: 12), // 상하 간격 조절
               child: Text(
-                chatsHandler.currentRoomId.value == 'Anam' ? '안암동 점주들 모임' : '신촌동 점주들 모임',
+                chatsHandler.currentRoomName.value,
                 textAlign: TextAlign.center, // 텍스트 중앙 정렬
                 style: const TextStyle(
                   fontSize: 20,
@@ -194,6 +199,7 @@ class Chat extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       itemBuilder: (context, index) {
         ChatList chat = chatsHandler.chats[index];
+        index >0 ? print(int.parse(chat.timestamp.substring(14, 16)) == int.parse(chatsHandler.chats[index-1].timestamp.substring(14,16))) : print('a');
         if (chatsHandler.checkToday(chat)) {
           String date = chat.text.substring(3, 13);
           return Center(
@@ -243,42 +249,54 @@ class Chat extends StatelessWidget {
             ]:[
               Padding(
                 padding: const EdgeInsets.only(bottom:12.0),
-                child: CircleAvatar(
-                  backgroundImage: NetworkImage(
-                    chatsHandler.getUserImageByEmail(chatsHandler.users, chat.sender)!
+                child: Opacity(
+                  opacity: index >0 ? chat.sender == chatsHandler.chats[index-1].sender ?
+                  int.parse(chat.timestamp.substring(14, 16)) == int.parse(chatsHandler.chats[index-1].timestamp.substring(14,16)) ? 1 : 0 : 1 : 1,
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(
+                      chatsHandler.getUserImageByEmail(chatsHandler.users, chat.sender)!
+                    ),
+                    radius: 35,
                   ),
-                  radius: 35,
                 ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 15),
-                    // padding: const EdgeInsets.all(12),
-                    child: Text(
-                      chatsHandler.getUserNameByEmail(chatsHandler.users, chat.sender)!,
-                      style: const TextStyle(fontSize: 16),
+              Padding(
+                padding: const EdgeInsets.only(left:8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      child: Text(
+                        chatsHandler.getUserNameByEmail(chatsHandler.users, chat.sender)!,
+                        style: const TextStyle(fontSize: 15),
+                      ),
                     ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.blueGrey[100],
-                      borderRadius: BorderRadius.circular(10),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.symmetric(vertical: 5),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.blueGrey[100],
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            chat.text,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left:7.0),
+                          child: Text(
+                            chat.timestamp.substring(11, 16), 
+                            style: const TextStyle(fontSize: 11, color: Colors.grey),
+                          ),
+                        ),
+                      ],
                     ),
-                    child: Text(
-                      chat.text,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(width: 4),
-              Text(
-                chat.timestamp.substring(11, 16), 
-                style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  ],
+                ),
               ),
             ]
           ),

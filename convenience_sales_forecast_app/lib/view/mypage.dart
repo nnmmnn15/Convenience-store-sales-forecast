@@ -45,6 +45,9 @@ class Mypage extends StatelessWidget {
               return Center(child: Text('${snapshot.error}'));
             } else {
               return Obx(() {
+                if(userHandler.currentUser.value!.email.isEmpty){
+                  Get.delete<UserHandler>();
+                }
                 final result = userHandler.currentUser;
                 return SingleChildScrollView(
                   child: Column(

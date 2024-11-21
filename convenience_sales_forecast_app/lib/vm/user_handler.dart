@@ -106,22 +106,11 @@ class UserHandler extends ImageHandler {
   }
 
 
-  clearUser() async{
-    users.clear();
-    currentUser.value!.email ='' ;
-    currentUser.value!.name ='' ;
-    currentUser.value!.image ='' ;
-    box.write('userEmail', '');
-    update();
-  }
-
   signOut() async {
     await FirebaseAuth.instance.signOut();
     await GoogleSignIn().signOut();
-    await box.write('userEmail', "");
-    await Get.find<ChatHandler>().clearChat();
-    await clearUser();
     Get.offAll(()=> Login());
+    Get.delete<UserHandler>();
     update();
   }
 
