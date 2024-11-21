@@ -24,39 +24,51 @@ class SalesDetail extends StatelessWidget {
             Obx(
               () => Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  // 함수화 가능
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.2,
-                    child: Column(
-                      children: [
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('특성 1'),
-                            Text('범위'),
-                          ],
-                        ),
-                        Slider(
-                          activeColor: Colors.blue, // 선택 영역 색
-                          // inactiveColor: Colors.green, // 빈 영역 색
-                          thumbColor: Colors.red, // 동그라미 색
-                          value: mapHandler.feature1.value,
-                          // !!최대 최소 변경
-                          min: 0,
-                          max: 100,
-                          divisions: 100,
-                          onChanged: (value) {
-                            mapHandler.feature1.value = value;
-                          },
-                        ),
-                        Text(mapHandler.feature1.value.toInt().toString()),
-                      ],
-                    ),
-                  ),
-                ],
+                children: List.generate(5, (index) {
+                  return Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Column(
+                            children: [
+                              Text('${(index + 1) * 10}대 유동인구 수'),
+                              Text('100% = !!인구수'),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Slider(
+                        activeColor: Colors.blue,
+                        thumbColor: Colors.red,
+                        value: mapHandler.feature1[index],
+                        min: 70,
+                        max: 150,
+                        divisions: 80,
+                        onChanged: (value) {
+                          mapHandler.feature1[index] = value;
+                          // setState(() {
+                          //   mapHandler.feature1[index] = value;
+                          // });
+                        },
+                      ),
+                      Text('${mapHandler.feature1[index].toInt()}%'),
+                      // SizedBox(height: 20), // 각 슬라이더 사이의 간격
+                    ],
+                  );
+                }),
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  // 전송 함수
+                },
+                child: const Text('적용'),
+              ),
+            ),
+            // !!매출
             const Text(
               '해당 지역 편의점 개점시 예상 매출은 \n 1,475,438,000₩ ~ 1,682,438,000₩  입니다.',
               textAlign: TextAlign.center,
@@ -71,13 +83,13 @@ class SalesDetail extends StatelessWidget {
                 Container(
                   color: Colors.blue,
                   width: MediaQuery.of(context).size.width * 0.35,
-                  height: MediaQuery.of(context).size.height * 0.35,
+                  height: MediaQuery.of(context).size.height * 0.3,
                   child: const Text('차트1'),
                 ),
                 Container(
                   color: Colors.blue,
                   width: MediaQuery.of(context).size.width * 0.35,
-                  height: MediaQuery.of(context).size.height * 0.35,
+                  height: MediaQuery.of(context).size.height * 0.3,
                   child: const Text('차트2'),
                 ),
               ],
@@ -87,9 +99,7 @@ class SalesDetail extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    //
                     inputAlert();
-                    //
                   },
                   child: const Text('저장'),
                 ),

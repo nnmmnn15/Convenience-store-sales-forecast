@@ -32,9 +32,7 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
   late Animation<Offset> offsetAnimation;
 
   // 상세 보기 변경 값
-  final feature1 = 0.0.obs;
-  final feature2 = 0.0.obs;
-  final feature3 = 0.0.obs;
+  final feature1 = <double>[100, 100, 100, 100, 100].obs;
 
   // 이름 입력 텍스트 필드
   final TextEditingController textEditingController = TextEditingController();
@@ -102,10 +100,8 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
     ever(isDetail, (bool showDetail) {
       if (showDetail) {
         animationController.forward();
-        print(1);
       } else {
         animationController.reverse();
-        print(2);
       }
     });
   }
@@ -113,7 +109,6 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
   @override
   void onClose() {
     animationController.dispose();
-    print(10);
     super.onClose();
   }
 
@@ -196,6 +191,19 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
     }
   }
 
+  // 매출 예측
+  Future<void> forecast() async {
+    var url = Uri.parse(
+        "$defaultUrl/dong_name?lat=${selectLatLng.value.latitude}&lng=${selectLatLng.value.longitude}");
+    final response = await http.get(url); // GET 요청
+    if (response.statusCode == 200) {
+      // 성공적으로 응답을 받았을 때
+      String decodedBody = utf8.decode(response.bodyBytes);
+      final data = json.decode(decodedBody);
+      selectDongName.value = data['message'];
+    }
+  }
+
   void detailStateSwitch() {
     isDetail.value = !isDetail.value;
   }
@@ -215,7 +223,7 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
       'lat': selectLatLng.value.latitude,
       'lng': selectLatLng.value.longitude,
       'salesResult': 12340000,
-      'features': feature1.toInt(),
+      'features': feature1,
       'updatetime': now.toString(),
     });
   }
@@ -241,7 +249,7 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
       'lat': storeInfo.lat,
       'lng': storeInfo.lng,
       'salesResult': storeInfo.salesResult,
-      'features': feature1.value.toInt(),
+      'features': feature1,
       'updatetime': storeInfo.updatetime,
     });
   }

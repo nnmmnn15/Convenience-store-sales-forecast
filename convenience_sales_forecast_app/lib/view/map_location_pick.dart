@@ -129,8 +129,16 @@ class MapLocationPick extends StatelessWidget {
                                           ),
                                         ),
                                         ElevatedButton(
-                                            onPressed: () =>
-                                                mapHandler.detailStateSwitch(),
+                                            onPressed: () {
+                                              mapHandler.detailStateSwitch();
+                                              mapHandler.feature1.value = [
+                                                100,
+                                                100,
+                                                100,
+                                                100,
+                                                100
+                                              ];
+                                            },
                                             child: const Text('환경 변경하기'))
                                       ],
                                     )
