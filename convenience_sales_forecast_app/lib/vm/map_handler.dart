@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:convenience_sales_forecast_app/model/chart_model.dart';
 import 'package:convenience_sales_forecast_app/model/dong_loc.dart';
 import 'package:convenience_sales_forecast_app/model/store_history.dart';
 import 'package:flutter/material.dart';
@@ -56,6 +57,8 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
   final storeCount = 0.obs;
   // 해당 동의 예상 매출
   final salesForecast = 0.obs;
+
+  final otherPlaceSales = [].obs;
 
   // Firebase
   final locInfo = FirebaseFirestore.instance.collection('loc');
@@ -211,15 +214,22 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
   // 타지역 매출 예측
   Future<void> otherForecast() async {
     var url = Uri.parse(
-        "$defaultUrl/other_place?teen=${feature1[0] / 100}&twen=${feature1[1] / 100}&thirty=${feature1[2] / 100}&forty=${feature1[3] / 100}&fifty=${feature1[4] / 100}");
+        "$defaultUrl/other_place?teen=${feature1[0] / 100}&twen=${feature1[1] / 100}&thirty=${feature1[2] / 100}&forty=${feature1[3] / 100}&fifty=${feature1[4] / 100}&dong=${selectDongName.value}");
     final response = await http.get(url); // GET 요청
     if (response.statusCode == 200) {
       // 성공적으로 응답을 받았을 때
       String decodedBody = utf8.decode(response.bodyBytes);
       final data = json.decode(decodedBody);
-      print(data);
-      // salesForecast.value = data['message'];
-      // peoplesList.value = (data['pops'] as List<dynamic>).cast<int>();
+      final otherSale = data['message'];
+      otherPlaceSales.value =
+          otherSale.map((info) => ChartModel(info[0], info[1])).toList();
+
+      otherPlaceSales.sort((a, b) => (a.value - salesForecast.value)
+          .abs()
+          .compareTo((b.value - salesForecast.value).abs()));
+
+      // 상위 5개 항목만 반환
+      otherPlaceSales.value = otherPlaceSales.take(5).toList();
     }
   }
 
