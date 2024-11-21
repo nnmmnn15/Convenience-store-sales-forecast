@@ -67,6 +67,8 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
   final selectDongName = "".obs;
   // 해당 동의 편의점 수
   final storeCount = 0.obs;
+  // 해당 동의 예상 매출
+  final salesForecast = 0.obs;
 
   // Firebase
   final locInfo = FirebaseFirestore.instance.collection('loc');
@@ -112,8 +114,10 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
     ever(isDetail, (bool showDetail) {
       if (showDetail) {
         animationController.forward();
+        print(1);
       } else {
         animationController.reverse();
+        print(2);
       }
     });
   }
@@ -147,7 +151,7 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
   }
 
   // 지도의 한 지점을 선택
-  void selectPoint(double lat, double lng) async {
+  Future<void> selectPoint(double lat, double lng) async {
     isPicked.value = true;
     selectLatLng.value = latlng.LatLng(lat, lng);
     await getPolygon();
@@ -171,6 +175,10 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
           (latlngList.map((p) => latlng.LatLng(p[1], p[0])).toList())
               .cast<latlng.LatLng>();
     }
+  }
+
+  resetPolygon() {
+    dongPolygon.value = [const latlng.LatLng(1, 1), const latlng.LatLng(0, 0)];
   }
 
   // 행정동의 편의점 수
@@ -197,10 +205,6 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
       final data = json.decode(decodedBody);
       selectDongName.value = data['message'];
     }
-  }
-
-  void getStoresNearCount() {
-    // * 근처 매장수를 불러오는 코드 api * //
   }
 
   void detailStateSwitch() {

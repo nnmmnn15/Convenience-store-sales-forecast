@@ -1,5 +1,4 @@
 import 'package:convenience_sales_forecast_app/model/users.dart';
-import 'package:convenience_sales_forecast_app/view/rail_bar.dart';
 import 'package:convenience_sales_forecast_app/vm/user_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,19 +9,19 @@ class Mypage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          '마이 페이지',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
+        appBar: AppBar(
+          title: const Text(
+            '마이 페이지',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
           ),
+          foregroundColor: Colors.white,
+          backgroundColor: Colors.blueGrey,
         ),
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.blueGrey,
-      ),
-      body: GetBuilder<UserHandler>(builder: (_) {
+        body: GetBuilder<UserHandler>(builder: (_) {
           return FutureBuilder(
-            future:userHandler.getUserData(),
+            future: userHandler.getUserData(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -49,9 +48,7 @@ class Mypage extends StatelessWidget {
               }
             },
           );
-        }
-      )
-    );
+        }));
   }
 
   _buildProfileSection(BuildContext context, Users currentUser) {
@@ -63,8 +60,7 @@ class Mypage extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 60,
-              backgroundImage: NetworkImage(
-                  currentUser.image),
+              backgroundImage: NetworkImage(currentUser.image),
             ),
             const SizedBox(height: 16),
             Text(
@@ -137,8 +133,7 @@ class Mypage extends StatelessWidget {
     );
   }
 
-  _buildActionButtons(
-      BuildContext context, Users currentUser) {
+  _buildActionButtons(BuildContext context, Users currentUser) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(

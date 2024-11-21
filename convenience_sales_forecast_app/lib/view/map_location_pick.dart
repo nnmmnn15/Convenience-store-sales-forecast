@@ -97,7 +97,7 @@ class MapLocationPick extends StatelessWidget {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(
+                                        const Text(
                                           '예상 매출 금액',
                                           style: TextStyle(
                                             fontSize: 32,
@@ -108,7 +108,7 @@ class MapLocationPick extends StatelessWidget {
                                           children: [
                                             Text(
                                               '${mapHandler.selectDongName} 매장수 : ${mapHandler.storeCount.value}',
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 fontSize: 24,
                                               ),
                                             ),
@@ -121,8 +121,8 @@ class MapLocationPick extends StatelessWidget {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          '100,000,000 ~ 120,000,000',
-                                          style: TextStyle(
+                                          '${mapHandler.salesForecast}',
+                                          style: const TextStyle(
                                             fontSize: 28,
                                             fontWeight: FontWeight.bold,
                                           ),
@@ -178,9 +178,12 @@ class MapLocationPick extends StatelessWidget {
           flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
         ),
         // 화면 터치시 동작
-        onTap: (tapPosition, point) {
+        onTap: (tapPosition, point) async {
           // print("${point.latitude}, ${point.longitude}");
-          mapHandler.selectPoint(point.latitude, point.longitude);
+          await mapHandler.selectPoint(point.latitude, point.longitude);
+          if (!mapHandler.dongNames.contains(mapHandler.selectDongName.value)) {
+            errorAlert();
+          }
         },
       ),
       children: [
@@ -200,6 +203,25 @@ class MapLocationPick extends StatelessWidget {
                 ),
               ],
             )),
+      ],
+    );
+  }
+
+  // --- Functions ---
+  errorAlert() {
+    Get.defaultDialog(
+      title: "정보",
+      middleText: '지원하지 않는 행정동 입니다.',
+      barrierDismissible: false,
+      actions: [
+        TextButton(
+          onPressed: () {
+            Get.back();
+            mapHandler.isPicked.value = false;
+            mapHandler.resetPolygon();
+          },
+          child: const Text('확인'),
+        )
       ],
     );
   }
