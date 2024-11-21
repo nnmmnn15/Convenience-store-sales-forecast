@@ -23,77 +23,122 @@ class SalesDetail extends StatelessWidget {
                   )
                 ],
               ),
-              const Padding(
-                padding: EdgeInsets.all(20.0),
+               Padding(
+                padding: const EdgeInsets.fromLTRB(0,5,0,10),
                 child: Row(
                   children: [
-                    Text(
-                      '이전 분기 나이대별 유동인구',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                    Card(
+                      color: Colors.brown[100],
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8), 
+                      ),
+                      child: const Padding( 
+                        padding:EdgeInsets.fromLTRB(12,4,12,4),
+                        child: Text(
+                          '이전 분기 나이대별 유동인구',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
               Obx(
-                () => Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: List.generate(5, (index) {
-                    return Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
+                () => Stack(
+                  children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Colors.blueGrey[100],
+                    ),
+                    height: MediaQuery.of(context).size.height/6,
+                    width: MediaQuery.of(context).size.width/1.05,
+                  ),
+                  Container(
+                    height: MediaQuery.of(context).size.height/14,
+                    width: MediaQuery.of(context).size.width/1.05,
+                    color: Colors.blueGrey[200],
+                  ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: List.generate(5, (index) {
+                        return Column(
                           children: [
-                            Column(
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Text('${(index + 1) * 10}대 유동인구 수'),
-                                Text('100% = ${mapHandler.peoplesList[index]}'),
+                                Column(
+                                  children: [
+                                    Padding(
+                                      padding:const EdgeInsets.fromLTRB(12,2,12,0),
+                                      child: Text(
+                                        '${(index + 1) * 10}대 유동인구 수', 
+                                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                    Container(
+                                      
+                                      child: Text('100% = ${mapHandler.peoplesList[index]}')
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
+                            Slider(
+                              activeColor: Colors.blue[400],
+                              thumbColor: Colors.red[300],
+                              value: mapHandler.feature1[index],
+                              min: 90,
+                              max: 110,
+                              divisions: 20,
+                              onChanged: (value) {
+                                mapHandler.feature1[index] = value;
+                                // setState(() {
+                                //   mapHandler.feature1[index] = value;
+                                // });
+                              },
+                            ),
+                            Text('${mapHandler.feature1[index].toInt()}%'),
+                            // SizedBox(height: 20), // 각 슬라이더 사이의 간격
                           ],
-                        ),
-                        Slider(
-                          activeColor: Colors.blue,
-                          thumbColor: Colors.red,
-                          value: mapHandler.feature1[index],
-                          min: 90,
-                          max: 110,
-                          divisions: 20,
-                          onChanged: (value) {
-                            mapHandler.feature1[index] = value;
-                            // setState(() {
-                            //   mapHandler.feature1[index] = value;
-                            // });
-                          },
-                        ),
-                        Text('${mapHandler.feature1[index].toInt()}%'),
-                        // SizedBox(height: 20), // 각 슬라이더 사이의 간격
-                      ],
-                    );
-                  }),
+                        );
+                      }),
+                    ),
+
+                  ]
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: const EdgeInsets.all(10.0),
                 child: ElevatedButton(
                   onPressed: () {
                     // 전송 함수
                     mapHandler.forecast();
                     mapHandler.otherForecast();
                   },
-                  child: const Text('적용'),
+                  child: const Text('변화된 매출 에측하기'),
                 ),
               ),
               // !!매출
               Obx(
-                () => Text(
-                  '해당 지역 편의점 개점시 예상 매출은 \n ${mapHandler.wirteSale(mapHandler.salesForecast)}원',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
+                () => Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black)
+                    ),
+                    child: Text(
+                      '해당 지역 편의점 개점시 예상 매출은 ${mapHandler.wirteSale(mapHandler.salesForecast)}원(₩) 입니다.',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
               ),

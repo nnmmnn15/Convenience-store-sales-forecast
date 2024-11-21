@@ -199,7 +199,6 @@ class Chat extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       itemBuilder: (context, index) {
         ChatList chat = chatsHandler.chats[index];
-        index >0 ? print(int.parse(chat.timestamp.substring(14, 16)) == int.parse(chatsHandler.chats[index-1].timestamp.substring(14,16))) : print('a');
         if (chatsHandler.checkToday(chat)) {
           String date = chat.text.substring(3, 13);
           return Center(
@@ -250,8 +249,8 @@ class Chat extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom:12.0),
                 child: SizedBox(
-                    child: index >0 ? chat.sender == chatsHandler.chats[index-1].sender ?
-                int.parse(chat.timestamp.substring(14, 16)) == int.parse(chatsHandler.chats[index-1].timestamp.substring(14,16)) ?CircleAvatar(
+                  child: index >0 ? chat.sender == chatsHandler.chats[index-1].sender ?
+                  int.parse(chat.timestamp.substring(14, 16)) == int.parse(chatsHandler.chats[index-1].timestamp.substring(14,16)) ?CircleAvatar(
                   backgroundImage: NetworkImage(
                     chatsHandler.getUserImageByEmail(chatsHandler.users, chat.sender)!
                   ),

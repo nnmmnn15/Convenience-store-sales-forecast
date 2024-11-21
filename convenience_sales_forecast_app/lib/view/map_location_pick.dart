@@ -21,7 +21,6 @@ class MapLocationPick extends StatelessWidget {
           children: [
             // 지도
             flutterMap(),
-
             // 행정동 버튼, 영역 선택
             Obx(
               () => Row(
@@ -140,7 +139,7 @@ class MapLocationPick extends StatelessWidget {
                                                 100
                                               ];
                                             },
-                                            child: const Text('환경 변경하기'))
+                                            child: const Text('시뮬레이션'))
                                       ],
                                     )
                                   ],
