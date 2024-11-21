@@ -42,6 +42,5 @@ def getStoreCount(hdongs_2):
 
 
     #### 편의점 수
-    # !
     return (gpd.sjoin(convs_gdf, hdongs_2, how='inner',  predicate='within').shape[0])
 

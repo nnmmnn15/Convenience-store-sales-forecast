@@ -9,6 +9,7 @@ class SalesHistory extends StatelessWidget {
   SalesHistory({super.key});
 
   final mapHandler = Get.put(MapHandler());
+  // final MapHandler mapHandler = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -45,8 +46,11 @@ class SalesHistory extends StatelessWidget {
                             if (mapHandler.isRun.value) {
                               mapHandler.mapController.move(
                                 latlng.LatLng(storeInfo.lat, storeInfo.lng),
-                                16,
+                                14,
                               );
+                              mapHandler.selectLatLng.value =
+                                  latlng.LatLng(storeInfo.lat, storeInfo.lng);
+                              mapHandler.getPolygon();
                             }
                             mapHandler.selectedIndex.value = index;
                             mapHandler.selectedStore.value = true;
@@ -202,7 +206,7 @@ class SalesHistory extends StatelessWidget {
         // 화면 배율 초기값
         initialZoom: 16.0,
         // 최소값
-        minZoom: 16.0,
+        minZoom: 13.5,
         // 최댓값
         maxZoom: 19.0,
 
@@ -216,33 +220,15 @@ class SalesHistory extends StatelessWidget {
           urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
         ),
 
-        // 마커
-        MarkerLayer(
-          markers: [
-            Marker(
-              width: 80,
-              height: 80,
-              point: latlng.LatLng(storeInfo.lat, storeInfo.lng),
-              child: Column(
-                children: [
-                  SizedBox(
-                    child: Text(
-                      storeInfo.alias,
-                      style: const TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                  const Icon(
-                    Icons.location_on,
-                    size: 50,
-                    color: Colors.red,
-                  )
-                ],
-              ),
-            )
+        // polygon
+        PolygonLayer(
+          polygons: [
+            Polygon(
+              points: mapHandler.dongPolygon,
+              color: Colors.blue.withOpacity(0.3), // 폴리곤 내부 색상
+              borderStrokeWidth: 3.0,
+              borderColor: Colors.blue, // 폴리곤 경계 색상
+            ),
           ],
         ),
       ],

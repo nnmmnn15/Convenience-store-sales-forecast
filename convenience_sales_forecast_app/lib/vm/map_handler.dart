@@ -17,18 +17,6 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
   // 지도의 실행 상태
   final isRun = false.obs;
 
-  // 신촌동 중심 좌표
-  // final shinchonBounds = LatLngBounds(
-  //   const latlng.LatLng(37.55477445764391, 126.9294163813863), // 남서쪽 경계
-  //   const latlng.LatLng(37.57477445764391, 126.9494163813863), // 북동쪽 경계
-  // );
-
-  // // 안암동 좌표
-  // final anamBounds = LatLngBounds(
-  //   const latlng.LatLng(37.577258701210175, 127.01935259671821), // 남서쪽 경계
-  //   const latlng.LatLng(37.597258701210175, 127.03935259671821), // 북동쪽 경계
-  // );
-
   // 시작점
   final latlng.LatLng startPoint =
       const latlng.LatLng(37.56640471391909, 126.97804621813793);
@@ -125,6 +113,7 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
   @override
   void onClose() {
     animationController.dispose();
+    print(10);
     super.onClose();
   }
 
