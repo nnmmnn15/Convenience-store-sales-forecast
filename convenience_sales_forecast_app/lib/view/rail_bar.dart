@@ -1,3 +1,9 @@
+/*
+author: 이원영
+Description: Rail Bar
+Fixed: 11/21
+Usage: Tablet의 네비게이션 바
+*/
 import 'package:convenience_sales_forecast_app/view/chat.dart';
 import 'package:convenience_sales_forecast_app/view/map_location_pick.dart';
 import 'package:convenience_sales_forecast_app/view/mypage.dart';

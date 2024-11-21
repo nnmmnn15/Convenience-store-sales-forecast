@@ -1,39 +1,37 @@
 /*
 author: 이원영
-Description: 마이페이지
+Description: 내 정보 수정
 Fixed: 11/21
-Usage: 간단한 내 정보 페이지 (Google Login으로 구현되어 정보가 몇개 없음)
+Usage: FireStore를 통해 프로필 사진 및 이름 수정하는 페이지
 */
+import 'dart:io';
 import 'package:convenience_sales_forecast_app/model/users.dart';
-import 'package:convenience_sales_forecast_app/view/mypage_edit.dart';
 import 'package:convenience_sales_forecast_app/vm/user_handler.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
-class Mypage extends StatelessWidget {
-  Mypage({super.key});
+class MypageEdit extends StatelessWidget {
+  MypageEdit({super.key});
+
   final UserHandler userHandler = Get.find();
+  final TextEditingController nameController = TextEditingController(
+    text:Get.find<UserHandler>().currentUser.value!.name
+  );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          '마이 페이지',
+          '내 정보 수정',
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
         ),
         foregroundColor: Colors.white,
         backgroundColor: Colors.blueGrey,
-        actions: [
-          IconButton(
-            onPressed: () async{
-              await userHandler.gotoEdit();
-              Get.to(()=> MypageEdit());
-            }, 
-            icon: const Icon(Icons.edit)
-          )
-        ],
       ),
       body: GetBuilder<UserHandler>(builder: (_) {
         return FutureBuilder(
@@ -50,7 +48,7 @@ class Mypage extends StatelessWidget {
                   child: Column(
                     children: [
                       _buildProfileSection(context, result.value!),
-                      _buildInfoSection(result.value!),
+                      _buildInfoSection(result.value!, context),
                       const Divider(
                         color: Colors.grey,
                         thickness: 1,
@@ -71,22 +69,38 @@ class Mypage extends StatelessWidget {
 
   _buildProfileSection(BuildContext context, Users currentUser) {
     return Container(
+      height: MediaQuery.of(context).size.height/4,
       padding: const EdgeInsets.symmetric(vertical: 20),
       color: Colors.green.shade50,
       child: Center(
         child: Column(
           children: [
-            CircleAvatar(
-              radius: 60,
-              backgroundImage: NetworkImage(
-                  currentUser.image),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              currentUser.name,
-              style: const TextStyle(
-                fontSize: 24,
+            const Text(
+              '프로필 이미지',
+              style: TextStyle(
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            GestureDetector(
+              onTap: () => changeImage(context),
+              child: userHandler.firstDisp.value == 0 ?
+              CircleAvatar(
+                radius: 60,
+                backgroundImage:
+                 NetworkImage(  
+                  currentUser.image 
+                )
+              ):
+              userHandler.imgFile == null?
+                const Text('Image not found'):
+                CircleAvatar(
+                radius: MediaQuery.of(context).size.width / 20, // 너비에 따라 반지름 조정
+                backgroundImage: FileImage(File(userHandler.imgFile!.path)), // 이미지 파일 설정
+                backgroundColor: Colors.grey[200], // 이미지가 없을 때의 배경색 (옵션)
               ),
             ),
           ],
@@ -95,7 +109,7 @@ class Mypage extends StatelessWidget {
     );
   }
 
-  _buildInfoSection(Users currentUser) {
+  _buildInfoSection(Users currentUser, context) {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -120,9 +134,9 @@ class Mypage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildInfoItem('이름', currentUser.name),
+                  _buildInfoItem('이름', currentUser.name, context),
                   const SizedBox(height: 8),
-                  _buildInfoItem('이메일', currentUser.email),
+                  _buildInfoItem('이메일', currentUser.email, context),
                 ],
               ),
             ),
@@ -132,8 +146,9 @@ class Mypage extends StatelessWidget {
     );
   }
 
-  _buildInfoItem(String label, String value) {
+  _buildInfoItem(String label, String value, context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center, // 텍스트와 필드 세로 정렬
       children: [
         Text(
           '$label: ',
@@ -142,7 +157,21 @@ class Mypage extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        Text(
+        label == '이름'? 
+        SizedBox(
+          width: MediaQuery.of(context).size.width / 7,
+          child: TextField(
+            controller: nameController,
+            style: const TextStyle(
+              fontSize: 16, 
+            ),
+            decoration: const InputDecoration(
+              isDense: true, 
+              contentPadding: EdgeInsets.symmetric(vertical: 8.0),
+            ),
+          ),
+        )
+      : Text(
           value,
           style: const TextStyle(
             fontSize: 16,
@@ -152,30 +181,20 @@ class Mypage extends StatelessWidget {
     );
   }
 
+
   _buildActionButtons(
-      BuildContext context, Users currentUser) {
+    BuildContext context, Users currentUser) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _buildActionButton(
-            icon: Icons.logout,
-            label: '로그아웃',
+            icon: Icons.edit_document,
+            label: '수정',
             onPressed: () => showDialog(),
-            color: Colors.red,
+            color: Colors.blueGrey,
           ),
-          // _buildActionButton(
-          //   icon: Icons.edit,
-          //   label: '내정보 수정',
-          //   onPressed: () {
-          //     Get.to(MyinfoUpdate(), arguments: result[0].id)!.then(
-          //       (value) =>
-          //           userH.selectMyinfo(loginHandler.getStoredEmail()),
-          //     );
-          //   },
-          //   color: Colors.green,
-          // ),
         ],
       ),
     );
@@ -204,20 +223,57 @@ class Mypage extends StatelessWidget {
 
   showDialog() {
     Get.defaultDialog(
-      title: "로그아웃",
+      title: "수정",
       titleStyle: const TextStyle(
         fontWeight: FontWeight.bold,
       ),
-      middleText: '로그아웃 하시겠습니까?',
+      middleText: '수정 하시겠습니까?',
       textConfirm: "확인",
       textCancel: "취소",
       confirmTextColor: Colors.white,
       cancelTextColor: Colors.black,
       buttonColor: Colors.lightGreen,
       onConfirm: () async {
-        await userHandler.signOut();
+        await userHandler.preparingImage();
+        await userHandler.updateProfileImage(nameController.text.trim());
+        Get.back();
+        Get.back();
       },
     );
   }
 
+  changeImage(context){
+    showCupertinoModalPopup(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) => CupertinoActionSheet(
+        actions: [
+          CupertinoActionSheetAction(
+            onPressed: () async{
+              Get.back();
+              await userHandler.getImageFromGalleryEdit(ImageSource.gallery);
+            },
+            child: const Text(
+              '프로필 사진 변경',
+            ),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () async{
+              await userHandler.deleteProfileImage();
+              Get.back();
+            },
+            child: const Text(
+            '프로필 사진 삭제',
+            ),
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          onPressed: () => Get.back(),
+          child: const Text(
+            '취소',
+          )
+        ),
+      ),
+    );
+  }
 }

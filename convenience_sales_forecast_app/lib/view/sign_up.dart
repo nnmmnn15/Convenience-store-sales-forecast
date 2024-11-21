@@ -60,10 +60,8 @@ class _SignUpState extends State<SignUp> {
                   SizedBox(
                     height: 50,
                     child: ElevatedButton(
-                      child: const Text('회원가입 완료'),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                    // TODO: 회원가입 로직 구현
                     // 예: Firebase Auth를 사용한 회원가입
                     // FirebaseAuth.instance.createUserWithEmailAndPassword(
                     //   email: _emailController.text,
@@ -76,8 +74,9 @@ class _SignUpState extends State<SignUp> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
+                child: const Text('회원가입 완료'),
               ),
               )],
           ),
@@ -92,8 +91,8 @@ Widget _buildTextField(TextEditingController controller, String label, {bool isP
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
-        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        border: const OutlineInputBorder(),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
       obscureText: isPassword,
       keyboardType: keyboardType,

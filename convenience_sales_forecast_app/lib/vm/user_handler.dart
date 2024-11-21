@@ -1,3 +1,9 @@
+/*
+author: 이원영
+Description: 채팅 ui
+Fixed: 11/20
+Usage: 점주들 그룹 채팅
+*/
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:convenience_sales_forecast_app/model/users.dart';
 import 'package:convenience_sales_forecast_app/view/login.dart';
@@ -22,6 +28,12 @@ class UserHandler extends ImageHandler {
   void onInit() async {
     super.onInit();
     getUserData();
+  }
+
+  gotoEdit() async{
+    firstDisp.value = 0;
+    imgFile = null;
+    update();
   }
 
   signInWithGoogle() async {
@@ -67,10 +79,32 @@ class UserHandler extends ImageHandler {
   }
 
   getMyInfo(String email) async{
-    DocumentSnapshot docSnapshot = await _users.doc(email).get();
-    Map<String, dynamic> data = docSnapshot.data() as Map<String, dynamic>;
-    currentUser.value = Users.fromMap(data, email);
+    _users.doc(email).snapshots().listen((DocumentSnapshot docSnapshot) {
+    if (docSnapshot.exists) {
+      Map<String, dynamic> data = docSnapshot.data() as Map<String, dynamic>;
+      currentUser.value = Users.fromMap(data, email);
+    } else {
+      currentUser.value = null; // 문서가 삭제되었을 경우 처리
+    }
+  });
   }
+
+  updateProfileImage(name) async{
+    String imageURL = await preparingImage() ?? currentUser.value!.image;
+    await FirebaseFirestore.instance.collection('user').doc(box.read('userEmail')).update({
+      'name' : name,
+      'image': imageURL,
+    });
+    update();
+  }
+
+  deleteProfileImage() async{
+    await FirebaseFirestore.instance.collection('user').doc(box.read('userEmail')).update({
+      'image': 'https://via.placeholder.com/150',
+    });
+    update();
+  }
+
 
   clearUser() async{
     users.clear();

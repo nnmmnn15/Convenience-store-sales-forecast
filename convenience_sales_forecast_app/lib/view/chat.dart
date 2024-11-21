@@ -1,3 +1,9 @@
+/*
+author: 이원영
+Description: 채팅 ui
+Fixed: 11/20
+Usage: 점주들 그룹 채팅
+*/
 import 'package:convenience_sales_forecast_app/model/chat_list.dart';
 import 'package:convenience_sales_forecast_app/model/chat_room.dart';
 import 'package:convenience_sales_forecast_app/vm/chat_handler.dart';

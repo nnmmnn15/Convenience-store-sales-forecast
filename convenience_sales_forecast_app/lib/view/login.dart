@@ -36,13 +36,15 @@ class Login extends StatelessWidget {
                     if (userCredential != null) {
                       Get.to(() => RailBar());
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Google 로그인 실패')),
+                      Get.snackbar(
+                        '오류',
+                        'Google 로그인 실패',
                       );
                     }
                   } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Google 로그인 중 오류 발생')),
+                    Get.snackbar(
+                      '오류',
+                      'Google 로그인 중 오류 발생',
                     );
                   }
                 }),
