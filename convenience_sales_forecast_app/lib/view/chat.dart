@@ -128,7 +128,7 @@ class Chat extends StatelessWidget {
           flex: 5,
           child: chatsHandler.chatShow.value? 
           chatDetail(context,):
-          const Center(child: Text('채팅을 선택하세요')
+           Center(child: Image.asset('images/ai.png'),
           ),
         ),
       ]
@@ -193,15 +193,24 @@ class Chat extends StatelessWidget {
           return Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(
-                date,
-                style: const TextStyle(fontSize: 16, color: Colors.grey),
+              child: Container(
+                alignment: Alignment.center,
+                width: MediaQuery.of(context).size.width/8,
+                height: MediaQuery.of(context).size.height/25,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.black45
+                ),
+                child: Text(
+                  "${date.substring(0,4)}년 ${date.substring(5,7)}월 ${date.substring(8,10)}일",
+                  style: TextStyle(fontSize: 16, color: Colors.grey[200]),
+                ),
               ),
             ),
           );
         }
 
-        bool isSender = chat.sender == userHandler.box.read('id');
+        bool isSender = chat.sender == userHandler.box.read('userEmail');
         return Align(
           alignment: isSender ? Alignment.centerRight : Alignment.centerLeft,
           child: Row(
@@ -309,7 +318,7 @@ class Chat extends StatelessWidget {
 
   inputChat() async {
     if (chatController.text.trim().isEmpty) return;
-    ChatList newChat = ChatList(text: chatController.text.trim(), timestamp: DateTime.now().toString(), sender: userHandler.box.read('id'),roomId: chatsHandler.currentRoomId.value);
+    ChatList newChat = ChatList(text: chatController.text.trim(), timestamp: DateTime.now().toString(), sender: userHandler.box.read('userEmail'),roomId: chatsHandler.currentRoomId.value);
     await chatsHandler.addChat(newChat);
     chatController.clear();
   }
