@@ -78,8 +78,7 @@ class Mypage extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 60,
-              backgroundImage: NetworkImage(
-                  currentUser.image),
+              backgroundImage: NetworkImage(currentUser.image),
             ),
             const SizedBox(height: 16),
             Text(
@@ -152,8 +151,7 @@ class Mypage extends StatelessWidget {
     );
   }
 
-  _buildActionButtons(
-      BuildContext context, Users currentUser) {
+  _buildActionButtons(BuildContext context, Users currentUser) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
@@ -165,17 +163,6 @@ class Mypage extends StatelessWidget {
             onPressed: () => showDialog(),
             color: Colors.red,
           ),
-          // _buildActionButton(
-          //   icon: Icons.edit,
-          //   label: '내정보 수정',
-          //   onPressed: () {
-          //     Get.to(MyinfoUpdate(), arguments: result[0].id)!.then(
-          //       (value) =>
-          //           userH.selectMyinfo(loginHandler.getStoredEmail()),
-          //     );
-          //   },
-          //   color: Colors.green,
-          // ),
         ],
       ),
     );
