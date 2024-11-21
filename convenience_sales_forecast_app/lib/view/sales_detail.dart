@@ -1,6 +1,7 @@
 import 'package:convenience_sales_forecast_app/vm/map_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class SalesDetail extends StatelessWidget {
   SalesDetail({super.key});
@@ -101,20 +102,37 @@ class SalesDetail extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Container(
-                    color: Colors.blue,
+                  // Container(
+                  //   color: Colors.blue,
+                  //   width: MediaQuery.of(context).size.width * 0.35,
+                  //   height: MediaQuery.of(context).size.height * 0.3,
+                  //   child: const Text('차트1'),
+                  // ),
+                  SizedBox(
                     width: MediaQuery.of(context).size.width * 0.35,
                     height: MediaQuery.of(context).size.height * 0.3,
-                    child: const Text('차트1'),
-                  ),
-                  Container(
-                    color: Colors.blue,
-                    width: MediaQuery.of(context).size.width * 0.35,
-                    height: MediaQuery.of(context).size.height * 0.3,
-                    child: const Text('차트2'),
+                    child: Obx(
+                      () => SfCartesianChart(
+                        primaryXAxis: const CategoryAxis(),
+                        primaryYAxis: const NumericAxis(),
+                        series: [
+                          ColumnSeries<dynamic, String>(
+                            dataSource: mapHandler.otherPlaceSales.value,
+                            xValueMapper: (dynamic region, _) => region.name,
+                            yValueMapper: (dynamic region, _) => region.value,
+                            dataLabelSettings:
+                                const DataLabelSettings(isVisible: true),
+                          )
+                        ],
+                        title: const ChartTitle(text: '지역별 데이터'),
+                        // legend: const Legend(isVisible: true),
+                        tooltipBehavior: TooltipBehavior(enable: true),
+                      ),
+                    ),
                   ),
                 ],
               ),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [

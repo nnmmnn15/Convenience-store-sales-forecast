@@ -139,6 +139,7 @@ class MapLocationPick extends StatelessWidget {
                                                 100,
                                                 100
                                               ];
+                                              mapHandler.otherForecast();
                                             },
                                             child: const Text('환경 변경하기'))
                                       ],

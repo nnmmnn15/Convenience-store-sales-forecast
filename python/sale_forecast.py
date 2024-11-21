@@ -3,6 +3,7 @@ from lnglat import getDongName, getDongPoly, getStoreCount, getStoreSales
 import geopandas as gpd
 import joblib
 import pandas as pd
+import numpy as np
 
 app = FastAPI()
 hdongs =  gpd.read_file('data/서울시 상권분석서비스(영역-행정동)/서울시 상권분석서비스(영역-행정동).shp')
@@ -70,13 +71,15 @@ async def peopleCount(lat : float=None, lng: float=None):
     return {"pops" : list(pops_raw.iloc[0, :])}
 
 @app.get("/other_place")
-async def calculate(teen: float = 1, twen:float = 1, thirty : float = 1, forty : float = 1, fifty : float = 1):
+async def calculate(teen: float = 1, twen:float = 1, thirty : float = 1, forty : float = 1, fifty : float = 1, dong : str=None):
     otherPlaceList = []
-    for dong in maybe['행정동_코드_명'].unique():
+    dongList = maybe['행정동_코드_명'].unique()
+    dongList = np.delete(dongList, np.where(dongList == dong))
+    for dong in dongList:
         pops_raw = maybe[(maybe['기준_년분기_코드'] == 20242) & (maybe['행정동_코드_명'] == dong)].iloc[:, 4:-1]
         pops = pops_raw * [teen, twen, thirty, forty, fifty]
         sales = getStoreSales(pops, dong)[0]
-        otherPlaceList.append([dong , sales])
+        otherPlaceList.append([dong , int(sales)])
     return {'message':otherPlaceList}
 
 @app.get("/all")

@@ -51,8 +51,9 @@ class ChatHandler extends UserHandler {
     await queryChat(currentRoomId.value);
     update();
   }
+
   // 로그아웃시 정보 날리기
-  clearChat() async{
+  clearChat() async {
     chats.clear();
     rooms.clear();
     lastChats.clear();
@@ -82,7 +83,7 @@ class ChatHandler extends UserHandler {
     update();
   }
 
-  // 채팅 목록에서 타인의 이미지 
+  // 채팅 목록에서 타인의 이미지
   String? getUserImageByEmail(List<Users> users, String email) {
     // users 리스트에서 email이 일치하는 항목 찾기
     final matchedUser = users.firstWhere(
@@ -102,15 +103,13 @@ class ChatHandler extends UserHandler {
   }
 
   // 채팅목록 가져오기
-  queryChat(String room) async{
-    _rooms
-        .doc(room) 
-        .snapshots() 
-        .listen((DocumentSnapshot docSnapshot) {
+  queryChat(String room) async {
+    _rooms.doc(room).snapshots().listen((DocumentSnapshot docSnapshot) {
       if (docSnapshot.exists) {
         List<dynamic> messages = docSnapshot.get('chats') ?? [];
         List<ChatList> mappedMessages = messages
-            .map((message) => ChatList.fromMap(message as Map<String, dynamic>, room))
+            .map((message) =>
+                ChatList.fromMap(message as Map<String, dynamic>, room))
             .toList();
         mappedMessages.sort((a, b) => a.timestamp.compareTo(b.timestamp));
         chats.value = mappedMessages;
@@ -123,27 +122,29 @@ class ChatHandler extends UserHandler {
   // 채팅방에서 띄워줄 마지막 채팅 가져오기
   queryLastChat(List<ChatRoom> rooms) async {
     for (int i = 0; i < rooms.length; i++) {
-    _rooms
-        .doc(rooms[i].id)
-        .snapshots()
-        .listen((DocumentSnapshot docSnapshot) {
-      if (docSnapshot.exists) {
-        List<dynamic> messages = docSnapshot.get('chats') ?? [];
-        if (messages.isNotEmpty) {
-          Map<String, dynamic> lastMessage = messages.last as Map<String, dynamic>;
-          ChatList chat = ChatList.fromMap(lastMessage, rooms[i].id);
-          int existingIndex = lastChats.indexWhere((c) => c.roomId == rooms[i].id);
-          if (existingIndex != -1) {
-            lastChats[existingIndex] = chat;
-          } else {
-            lastChats.add(chat);
+      _rooms
+          .doc(rooms[i].id)
+          .snapshots()
+          .listen((DocumentSnapshot docSnapshot) {
+        if (docSnapshot.exists) {
+          List<dynamic> messages = docSnapshot.get('chats') ?? [];
+          if (messages.isNotEmpty) {
+            Map<String, dynamic> lastMessage =
+                messages.last as Map<String, dynamic>;
+            ChatList chat = ChatList.fromMap(lastMessage, rooms[i].id);
+            int existingIndex =
+                lastChats.indexWhere((c) => c.roomId == rooms[i].id);
+            if (existingIndex != -1) {
+              lastChats[existingIndex] = chat;
+            } else {
+              lastChats.add(chat);
+            }
           }
+        } else {
+          lastChats.removeWhere((c) => c.roomId == rooms[i].id);
         }
-      } else {
-        lastChats.removeWhere((c) => c.roomId == rooms[i].id);
-      }
-    });
-     }
+      });
+    }
     update();
   }
 
@@ -153,10 +154,9 @@ class ChatHandler extends UserHandler {
       rooms.value = event.docs.map((doc) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
         return ChatRoom(
-          id: doc.id,
-          imagePath: data['image'] ?? "",
-          roomName: data['roomname']
-        );
+            id: doc.id,
+            imagePath: data['image'] ?? "",
+            roomName: data['roomname']);
       }).toList();
     });
     update();
@@ -183,18 +183,24 @@ class ChatHandler extends UserHandler {
   addChat(ChatList chat) async {
     bool istoday = await isToday();
     if (!istoday) {
-      await _rooms.doc("$currentRoomId").update({'chats':FieldValue.arrayUnion([
-      {'sender': chat.sender,
-      'text': "set${DateTime.now().toString().substring(0, 10)}time",
-      'timestamp': DateTime.now().toString()}
-    ])});
+      await _rooms.doc("$currentRoomId").update({
+        'chats': FieldValue.arrayUnion([
+          {
+            'sender': chat.sender,
+            'text': "set${DateTime.now().toString().substring(0, 10)}time",
+            'timestamp': DateTime.now().toString()
+          }
+        ])
+      });
     }
-    _rooms
-      .doc("$currentRoomId").update({'chats':FieldValue.arrayUnion([
-      {'sender': chat.sender,
-      'text': chat.text,
-      'timestamp': DateTime.now().toString()}
-    ])});
+    _rooms.doc("$currentRoomId").update({
+      'chats': FieldValue.arrayUnion([
+        {
+          'sender': chat.sender,
+          'text': chat.text,
+          'timestamp': DateTime.now().toString()
+        }
+      ])
+    });
   }
 }
-
