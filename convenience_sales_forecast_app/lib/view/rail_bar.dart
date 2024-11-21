@@ -29,6 +29,7 @@ class RailBar extends StatelessWidget {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const SizedBox(width: 50,),
             Image.asset(
               'images/logo_.png', // 이미지 경로
               width: MediaQuery.of(context).size.width / 18,

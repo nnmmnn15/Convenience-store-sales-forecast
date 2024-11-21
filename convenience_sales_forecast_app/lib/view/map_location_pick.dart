@@ -82,72 +82,66 @@ class MapLocationPick extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.all(18.0),
+                            padding: const EdgeInsets.all(15.0),
                             child: Container(
                               width: MediaQuery.sizeOf(context).width * 0.6,
-                              height: MediaQuery.sizeOf(context).height * 0.15,
+                              height: MediaQuery.sizeOf(context).height * 0.23,
                               decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(25)),
-                              child: Padding(
-                                padding: const EdgeInsets.all(14.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(20,15,20,10),
+                                    child: Row(
+                                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        const Text(
-                                          '예상 매출 금액',
-                                          style: TextStyle(
-                                            fontSize: 32,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        Row(
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
                                             Text(
-                                              '${mapHandler.selectDongName} 매장수 : ${mapHandler.storeCount.value}',
+                                              '예상 매출 금액\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t선택한 지역 : ${mapHandler.selectDongName}',
                                               style: const TextStyle(
-                                                fontSize: 24,
+                                                fontSize: 32,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            Text(
+                                              '${mapHandler.wirteSale(mapHandler.salesForecast)}원\t\t\t\t\t\t\t\t\t\t\t\t${mapHandler.selectDongName} 편의점 수 : \t${mapHandler.storeCount.value}',
+                                              style: const TextStyle(
+                                                fontSize: 32,
+                                                fontWeight: FontWeight.bold,
                                               ),
                                             ),
                                           ],
                                         ),
                                       ],
                                     ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          '${mapHandler.wirteSale(mapHandler.salesForecast)}원',
-                                          style: const TextStyle(
-                                            fontSize: 28,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: SizedBox(
+                                      width: double.infinity, // 가로를 화면 전체로 확장
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(vertical: 16), // 버튼 높이 조정 (선택 사항)
                                         ),
-                                        ElevatedButton(
-                                            onPressed: () {
-                                              mapHandler.detailStateSwitch();
-                                              mapHandler.feature1.value = [
-                                                100,
-                                                100,
-                                                100,
-                                                100,
-                                                100
-                                              ];
-                                              mapHandler.otherForecast();
-                                            },
-                                            child: const Text('시뮬레이션'))
-                                      ],
-                                    )
-                                  ],
-                                ),
+                                        onPressed: () {
+                                          mapHandler.detailStateSwitch();
+                                          mapHandler.feature1.value = [100, 100, 100, 100, 100];
+                                          mapHandler.otherForecast();
+                                        },
+                                        child: const Text('시뮬레이션'),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     )

@@ -29,7 +29,7 @@ class SalesDetail extends StatelessWidget {
                 child: Row(
                   children: [
                     Card(
-                      color: Colors.brown[100],
+                      color: Colors.indigo[100],
                       elevation: 5,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8), 
@@ -81,9 +81,8 @@ class SalesDetail extends StatelessWidget {
                                         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                                       ),
                                     ),
-                                    Container(
-                                      
-                                      child: Text('100% = ${mapHandler.peoplesList[index]}')
+                                    SizedBox(
+                                      child: Text('100% = ${mapHandler.peoplesList[index]} 명')
                                     ),
                                   ],
                                 ),
@@ -98,13 +97,9 @@ class SalesDetail extends StatelessWidget {
                               divisions: 20,
                               onChanged: (value) {
                                 mapHandler.feature1[index] = value;
-                                // setState(() {
-                                //   mapHandler.feature1[index] = value;
-                                // });
                               },
                             ),
                             Text('${mapHandler.feature1[index].toInt()}%'),
-                            // SizedBox(height: 20), // 각 슬라이더 사이의 간격
                           ],
                         );
                       }),
@@ -116,12 +111,21 @@ class SalesDetail extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    elevation: 2,
+                  ),
                   onPressed: () {
                     // 전송 함수
                     mapHandler.forecast();
                     mapHandler.otherForecast();
                   },
-                  child: const Text('변화된 매출 에측하기'),
+                  child: const Text(
+                    '변화된 매출 에측하기',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black87,
+                    ),
+                  ),
                 ),
               ),
               // !!매출
