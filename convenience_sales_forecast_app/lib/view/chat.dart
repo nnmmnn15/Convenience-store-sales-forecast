@@ -249,16 +249,25 @@ class Chat extends StatelessWidget {
             ]:[
               Padding(
                 padding: const EdgeInsets.only(bottom:12.0),
-                child: Opacity(
-                  opacity: index >0 ? chat.sender == chatsHandler.chats[index-1].sender ?
-                  int.parse(chat.timestamp.substring(14, 16)) == int.parse(chatsHandler.chats[index-1].timestamp.substring(14,16)) ? 1 : 0 : 1 : 1,
-                  child: CircleAvatar(
-                    backgroundImage: NetworkImage(
-                      chatsHandler.getUserImageByEmail(chatsHandler.users, chat.sender)!
-                    ),
-                    radius: 35,
+                child: SizedBox(
+                    child: index >0 ? chat.sender == chatsHandler.chats[index-1].sender ?
+                int.parse(chat.timestamp.substring(14, 16)) == int.parse(chatsHandler.chats[index-1].timestamp.substring(14,16)) ?CircleAvatar(
+                  backgroundImage: NetworkImage(
+                    chatsHandler.getUserImageByEmail(chatsHandler.users, chat.sender)!
                   ),
-                ),
+                  radius: 35,
+                ) :const SizedBox(width: 70,):CircleAvatar(
+                  backgroundImage: NetworkImage(
+                    chatsHandler.getUserImageByEmail(chatsHandler.users, chat.sender)!
+                  ),
+                  radius: 35,
+                ):CircleAvatar(
+                  backgroundImage: NetworkImage(
+                    chatsHandler.getUserImageByEmail(chatsHandler.users, chat.sender)!
+                  ),
+                  radius: 35,
+                )
+                  ),
               ),
               Padding(
                 padding: const EdgeInsets.only(left:8.0),
@@ -266,7 +275,14 @@ class Chat extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
-                      child: Text(
+                      child: index >0 ? chat.sender == chatsHandler.chats[index-1].sender ?
+                  int.parse(chat.timestamp.substring(14, 16)) == int.parse(chatsHandler.chats[index-1].timestamp.substring(14,16)) ?Text(
+                        chatsHandler.getUserNameByEmail(chatsHandler.users, chat.sender)!,
+                        style: const TextStyle(fontSize: 15),
+                      ) :SizedBox():Text(
+                        chatsHandler.getUserNameByEmail(chatsHandler.users, chat.sender)!,
+                        style: const TextStyle(fontSize: 15),
+                      ):Text(
                         chatsHandler.getUserNameByEmail(chatsHandler.users, chat.sender)!,
                         style: const TextStyle(fontSize: 15),
                       ),
