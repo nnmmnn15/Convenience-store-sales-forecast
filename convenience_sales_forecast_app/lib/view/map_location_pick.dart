@@ -29,37 +29,41 @@ class MapLocationPick extends StatelessWidget {
                     decoration: const BoxDecoration(
                       color: Colors.black,
                     ),
+                    // alignment: Alignment.topRight,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        TextButton(
-                          onPressed: () => mapHandler.changeLocate(0),
-                          child: const Text(
-                            '신촌동',
+                        // TextButton(
+                        //   onPressed: () => mapHandler.changeLocate(0),
+                        //   child: const Text(
+                        //     '신촌동',
+                        //     style: TextStyle(
+                        //       color: Colors.white,
+                        //       fontWeight: FontWeight.bold,
+                        //       fontSize: 18,
+                        //     ),
+                        //   ),
+                        // ),
+                        // TextButton(
+                        //   onPressed: () => mapHandler.changeLocate(1),
+                        //   child: const Text(
+                        //     '안암동',
+                        //     style: TextStyle(
+                        //       color: Colors.white,
+                        //       fontWeight: FontWeight.bold,
+                        //       fontSize: 18,
+                        //     ),
+                        //   ),
+                        // ),
+                        const Padding(
+                          padding: EdgeInsets.all(12.0),
+                          child: Text(
+                            '행정동  ',
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
                             ),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () => mapHandler.changeLocate(1),
-                          child: const Text(
-                            '안암동',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                        const Text(
-                          '영역범위  ',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
                           ),
                         ),
                         DropdownButton(
@@ -67,11 +71,11 @@ class MapLocationPick extends StatelessWidget {
                           iconEnabledColor: Colors.white,
                           value: mapHandler.dropdownValue.value, // 현재 값
                           icon: const Icon(Icons.keyboard_arrow_down),
-                          items: mapHandler.rangeList.map((int items) {
+                          items: mapHandler.dongNames.map((String items) {
                             return DropdownMenuItem(
                               value: items,
                               child: Text(
-                                "$items m",
+                                items,
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -81,7 +85,7 @@ class MapLocationPick extends StatelessWidget {
                             );
                           }).toList(),
                           onChanged: (value) {
-                            mapHandler.setRange(value!);
+                            mapHandler.changeLocate(value!);
                           },
                         ),
                       ],
@@ -179,14 +183,12 @@ class MapLocationPick extends StatelessWidget {
     return FlutterMap(
       mapController: mapHandler.mapController,
       options: MapOptions(
-        initialCameraFit: CameraFit.bounds(
-          bounds: mapHandler.bound,
-        ),
+        initialCenter: mapHandler.startPoint,
 
         // 화면 배율 초기값
         initialZoom: 16.0,
         // 최소값
-        minZoom: 16.0,
+        minZoom: 14.0,
         // 최댓값
         maxZoom: 19.0,
 
@@ -196,6 +198,7 @@ class MapLocationPick extends StatelessWidget {
         ),
         // 화면 터치시 동작
         onTap: (tapPosition, point) {
+          print("${point.latitude}, ${point.longitude}");
           mapHandler.selectPoint(point.latitude, point.longitude);
         },
       ),
@@ -205,24 +208,6 @@ class MapLocationPick extends StatelessWidget {
         ),
 
         // 선택 상태 일 경우 마커 표시
-        // 영역
-        Obx(
-          () => mapHandler.isPicked.value
-              ? CircleLayer(
-                  circles: [
-                    CircleMarker(
-                      point: mapHandler.selectLatLng.value,
-                      radius: mapHandler.dropdownValue.value
-                          .toDouble(), // 반경 (미터 단위)
-                      useRadiusInMeter: true,
-                      color: Colors.blue.withOpacity(0.3), // 원 내부 색상
-                      borderColor: Colors.blue, // 원 테두리 색상
-                      borderStrokeWidth: 2, // 테두리 두께
-                    ),
-                  ],
-                )
-              : const SizedBox.shrink(),
-        ),
         // 마커
         Obx(
           () => mapHandler.isPicked.value
