@@ -33,28 +33,6 @@ class MapLocationPick extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        // TextButton(
-                        //   onPressed: () => mapHandler.changeLocate(0),
-                        //   child: const Text(
-                        //     '신촌동',
-                        //     style: TextStyle(
-                        //       color: Colors.white,
-                        //       fontWeight: FontWeight.bold,
-                        //       fontSize: 18,
-                        //     ),
-                        //   ),
-                        // ),
-                        // TextButton(
-                        //   onPressed: () => mapHandler.changeLocate(1),
-                        //   child: const Text(
-                        //     '안암동',
-                        //     style: TextStyle(
-                        //       color: Colors.white,
-                        //       fontWeight: FontWeight.bold,
-                        //       fontSize: 18,
-                        //     ),
-                        //   ),
-                        // ),
                         const Padding(
                           padding: EdgeInsets.all(12.0),
                           child: Text(
@@ -115,7 +93,7 @@ class MapLocationPick extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Row(
+                                    Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
@@ -126,12 +104,15 @@ class MapLocationPick extends StatelessWidget {
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
-                                        // !!매장수 변수로 변경
-                                        Text(
-                                          '근처 매장수 : 4',
-                                          style: TextStyle(
-                                            fontSize: 24,
-                                          ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              '${mapHandler.selectDongName} 매장수 : ${mapHandler.storeCount.value}',
+                                              style: TextStyle(
+                                                fontSize: 24,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
@@ -198,7 +179,7 @@ class MapLocationPick extends StatelessWidget {
         ),
         // 화면 터치시 동작
         onTap: (tapPosition, point) {
-          print("${point.latitude}, ${point.longitude}");
+          // print("${point.latitude}, ${point.longitude}");
           mapHandler.selectPoint(point.latitude, point.longitude);
         },
       ),
@@ -209,38 +190,16 @@ class MapLocationPick extends StatelessWidget {
 
         // 선택 상태 일 경우 마커 표시
         // 마커
-        Obx(
-          () => mapHandler.isPicked.value
-              ? MarkerLayer(
-                  markers: [
-                    Marker(
-                      width: 80,
-                      height: 80,
-                      point: mapHandler.selectLatLng.value,
-                      child: const Column(
-                        children: [
-                          SizedBox(
-                            child: Text(
-                              '위치',
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                          Icon(
-                            Icons.location_on,
-                            size: 50,
-                            color: Colors.red,
-                          )
-                        ],
-                      ),
-                    )
-                  ],
-                )
-              : const SizedBox.shrink(),
-        ),
+        Obx(() => PolygonLayer(
+              polygons: [
+                Polygon(
+                  points: mapHandler.dongPolygon,
+                  color: Colors.blue.withOpacity(0.3), // 폴리곤 내부 색상
+                  borderStrokeWidth: 3.0,
+                  borderColor: Colors.blue, // 폴리곤 경계 색상
+                ),
+              ],
+            )),
       ],
     );
   }

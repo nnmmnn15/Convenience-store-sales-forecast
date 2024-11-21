@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:convenience_sales_forecast_app/model/dong_loc.dart';
 import 'package:convenience_sales_forecast_app/model/store_history.dart';
@@ -6,6 +8,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:latlong2/latlong.dart' as latlng;
+import 'package:http/http.dart' as http;
 
 class MapHandler extends GetxController with GetTickerProviderStateMixin {
   final GetStorage box = GetStorage();
@@ -56,6 +59,15 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
   final dongNames = ['로딩'].obs;
   final dropdownValue = '로딩'.obs;
 
+  // 행정동 폴리곤
+  final dongPolygon =
+      <latlng.LatLng>[const latlng.LatLng(1, 1), const latlng.LatLng(0, 0)].obs;
+
+  // 선택한 동이름
+  final selectDongName = "".obs;
+  // 해당 동의 편의점 수
+  final storeCount = 0.obs;
+
   // Firebase
   final locInfo = FirebaseFirestore.instance.collection('loc');
   final history = FirebaseFirestore.instance.collection('store_hist');
@@ -67,6 +79,9 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
   final RxInt selectedIndex = (-1).obs;
   // 선택 상태 체크
   final selectedStore = false.obs;
+
+  // API URL
+  final String defaultUrl = "http://127.0.0.1:8000";
 
   @override
   void onInit() {
@@ -132,10 +147,56 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
   }
 
   // 지도의 한 지점을 선택
-  void selectPoint(double lat, double lng) {
-    isPicked.value = !isPicked.value;
+  void selectPoint(double lat, double lng) async {
+    isPicked.value = true;
     selectLatLng.value = latlng.LatLng(lat, lng);
+    await getPolygon();
+    await getDongName();
+    await getStoreCount();
+    // isPicked.value = !isPicked.value;
     // * 예상 매출액을 불러오는 코드 api * //
+    // if (isPicked.value) {}
+  }
+
+  // polygon
+  Future<void> getPolygon() async {
+    var url = Uri.parse(
+        "$defaultUrl/dong_polygon?lat=${selectLatLng.value.latitude}&lng=${selectLatLng.value.longitude}");
+    final response = await http.get(url); // GET 요청
+    if (response.statusCode == 200) {
+      // 성공적으로 응답을 받았을 때
+      final data = json.decode(response.body);
+      final latlngList = data['message'];
+      dongPolygon.value =
+          (latlngList.map((p) => latlng.LatLng(p[1], p[0])).toList())
+              .cast<latlng.LatLng>();
+    }
+  }
+
+  // 행정동의 편의점 수
+  Future<void> getStoreCount() async {
+    var url = Uri.parse(
+        "$defaultUrl/store_count?lat=${selectLatLng.value.latitude}&lng=${selectLatLng.value.longitude}");
+    final response = await http.get(url); // GET 요청
+    if (response.statusCode == 200) {
+      // 성공적으로 응답을 받았을 때
+      String decodedBody = utf8.decode(response.bodyBytes);
+      final data = json.decode(decodedBody);
+      storeCount.value = data['message'];
+    }
+  }
+
+  // 행정동 이름
+  Future<void> getDongName() async {
+    var url = Uri.parse(
+        "$defaultUrl/dong_name?lat=${selectLatLng.value.latitude}&lng=${selectLatLng.value.longitude}");
+    final response = await http.get(url); // GET 요청
+    if (response.statusCode == 200) {
+      // 성공적으로 응답을 받았을 때
+      String decodedBody = utf8.decode(response.bodyBytes);
+      final data = json.decode(decodedBody);
+      selectDongName.value = data['message'];
+    }
   }
 
   void getStoresNearCount() {
