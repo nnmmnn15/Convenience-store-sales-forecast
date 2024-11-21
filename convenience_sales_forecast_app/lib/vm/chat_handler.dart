@@ -49,6 +49,16 @@ class ChatHandler extends UserHandler {
     update();
   }
 
+  clearChat() async{
+    chats.clear();
+    rooms.clear();
+    lastChats.clear();
+    chatShow.value = false;
+    currentRoomId.value = 'Anam';
+    opacity.value = 1.0;
+    update();
+  }
+
   setcurrentRoomId(String roomid) {
     currentRoomId.value = roomid;
     update();
@@ -156,7 +166,7 @@ class ChatHandler extends UserHandler {
     if (!istoday) {
       await _rooms.doc("$currentRoomId").update({'chats':FieldValue.arrayUnion([
       {'sender': chat.sender,
-      'text': chat.text,
+      'text': "set${DateTime.now().toString().substring(0, 10)}time",
       'timestamp': DateTime.now().toString()}
     ])});
     }
