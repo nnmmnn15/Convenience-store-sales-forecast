@@ -5,8 +5,8 @@ import 'package:get/get.dart';
 class SalesDetail extends StatelessWidget {
   SalesDetail({super.key});
 
-  final mapHandler = Get.put(MapHandler());
-
+  // final mapHandler = Get.put(MapHandler());
+  final MapHandler mapHandler = Get.find();
   @override
   Widget build(BuildContext context) {
     return Scaffold(

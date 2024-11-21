@@ -11,7 +11,8 @@ class MapLocationPick extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    mapHandler.isDetail.value = false;
+    // mapHandler.isDetail.value = false;
+
     mapHandler.isPicked.value = false;
     return Scaffold(
       body: Center(
@@ -193,16 +194,18 @@ class MapLocationPick extends StatelessWidget {
 
         // 선택 상태 일 경우 마커 표시
         // 마커
-        Obx(() => PolygonLayer(
-              polygons: [
-                Polygon(
-                  points: mapHandler.dongPolygon,
-                  color: Colors.blue.withOpacity(0.3), // 폴리곤 내부 색상
-                  borderStrokeWidth: 3.0,
-                  borderColor: Colors.blue, // 폴리곤 경계 색상
-                ),
-              ],
-            )),
+        Obx(
+          () => PolygonLayer(
+            polygons: [
+              Polygon(
+                points: mapHandler.dongPolygon,
+                color: Colors.blue.withOpacity(0.3), // 폴리곤 내부 색상
+                borderStrokeWidth: 3.0,
+                borderColor: Colors.blue, // 폴리곤 경계 색상
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
