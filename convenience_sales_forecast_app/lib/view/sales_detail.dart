@@ -25,18 +25,18 @@ class SalesDetail extends StatelessWidget {
                   )
                 ],
               ),
-               Padding(
-                padding: const EdgeInsets.fromLTRB(0,5,0,10),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 5, 0, 10),
                 child: Row(
                   children: [
                     Card(
                       color: Colors.indigo[100],
                       elevation: 5,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8), 
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Padding( 
-                        padding:EdgeInsets.fromLTRB(12,4,12,4),
+                      child: const Padding(
+                        padding: EdgeInsets.fromLTRB(12, 4, 12, 4),
                         child: Text(
                           '이전 분기 나이대별 유동인구',
                           style: TextStyle(
@@ -50,64 +50,64 @@ class SalesDetail extends StatelessWidget {
                 ),
               ),
               Obx(
-                () => Stack(
-                  children: [
+                () => Stack(children: [
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),
                       color: Colors.blueGrey[100],
                     ),
-                    height: MediaQuery.of(context).size.height/6,
-                    width: MediaQuery.of(context).size.width/1.05,
+                    height: MediaQuery.of(context).size.height / 6,
+                    width: MediaQuery.of(context).size.width / 1.05,
                   ),
                   Container(
-                    height: MediaQuery.of(context).size.height/14,
-                    width: MediaQuery.of(context).size.width/1.05,
+                    height: MediaQuery.of(context).size.height / 14,
+                    width: MediaQuery.of(context).size.width / 1.05,
                     color: Colors.blueGrey[200],
                   ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: List.generate(5, (index) {
-                        return Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Column(
-                                  children: [
-                                    Padding(
-                                      padding:const EdgeInsets.fromLTRB(12,2,12,0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: List.generate(5, (index) {
+                      return Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Column(
+                                children: [
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(12, 2, 12, 0),
+                                    child: Text(
+                                      '${(index + 1) * 10}대 유동인구 수',
+                                      style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  SizedBox(
                                       child: Text(
-                                        '${(index + 1) * 10}대 유동인구 수', 
-                                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      child: Text('100% = ${mapHandler.peoplesList[index]} 명')
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            Slider(
-                              activeColor: Colors.blue[400],
-                              thumbColor: Colors.red[300],
-                              value: mapHandler.feature1[index],
-                              min: 90,
-                              max: 110,
-                              divisions: 20,
-                              onChanged: (value) {
-                                mapHandler.feature1[index] = value;
-                              },
-                            ),
-                            Text('${mapHandler.feature1[index].toInt()}%'),
-                          ],
-                        );
-                      }),
-                    ),
-
-                  ]
-                ),
+                                          '100% = ${mapHandler.peoplesList[index]} 명')),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Slider(
+                            activeColor: Colors.blue[400],
+                            thumbColor: Colors.red[300],
+                            value: mapHandler.feature1[index],
+                            min: 90,
+                            max: 110,
+                            divisions: 20,
+                            onChanged: (value) {
+                              mapHandler.feature1[index] = value;
+                            },
+                          ),
+                          Text('${mapHandler.feature1[index].toInt()}%'),
+                        ],
+                      );
+                    }),
+                  ),
+                ]),
               ),
               Padding(
                 padding: const EdgeInsets.all(10.0),
@@ -134,9 +134,8 @@ class SalesDetail extends StatelessWidget {
                 () => Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black)
-                    ),
+                    decoration:
+                        BoxDecoration(border: Border.all(color: Colors.black)),
                     child: Text(
                       '해당 지역 편의점 개점시 예상 매출은 ${mapHandler.wirteSale(mapHandler.salesForecast)}원(₩) 입니다.',
                       textAlign: TextAlign.center,
@@ -164,23 +163,32 @@ class SalesDetail extends StatelessWidget {
                     width: MediaQuery.of(context).size.width * 0.45,
                     height: MediaQuery.of(context).size.height * 0.3,
                     child: Obx(
-                      () =>SfCartesianChart(
+                      () => SfCartesianChart(
                         primaryXAxis: const CategoryAxis(),
                         primaryYAxis: NumericAxis(
                           minimum: mapHandler.otherPlaceSales.isNotEmpty
-                              ? mapHandler.otherPlaceSales.map((e) => e.value).reduce((a, b) => a < b ? a : b) * 0.8
+                              ? mapHandler.otherPlaceSales
+                                      .map((e) => e.value)
+                                      .reduce((a, b) => a < b ? a : b) *
+                                  0.8
                               : 0, // 최소값의 80%
                           maximum: mapHandler.otherPlaceSales.isNotEmpty
-                              ? mapHandler.otherPlaceSales.map((e) => e.value).reduce((a, b) => a > b ? a : b) * 1.2
+                              ? mapHandler.otherPlaceSales
+                                      .map((e) => e.value)
+                                      .reduce((a, b) => a > b ? a : b) *
+                                  1.2
                               : 100, // 최대값의 120%
                           interval: 5000, // 눈금 간격
                         ),
                         series: [
                           ColumnSeries<ChartModel, String>(
-                            dataSource: mapHandler.otherPlaceSales.value, // 타입이 보장된 RxList<ChartModel>
+                            dataSource: mapHandler.otherPlaceSales
+                                .value, // 타입이 보장된 RxList<ChartModel>
                             xValueMapper: (ChartModel region, _) => region.name,
-                            yValueMapper: (ChartModel region, _) => region.value,
-                            dataLabelSettings: const DataLabelSettings(isVisible: true),
+                            yValueMapper: (ChartModel region, _) =>
+                                region.value,
+                            dataLabelSettings:
+                                const DataLabelSettings(isVisible: true),
                             enableTooltip: true,
                           )
                         ],
@@ -237,9 +245,23 @@ class SalesDetail extends StatelessWidget {
     Get.dialog(
       AlertDialog(
         title: const Text('이름 입력'),
-        content: TextField(
-          controller: mapHandler.textEditingController,
-          decoration: const InputDecoration(hintText: "선택한 지점의 이름을 설정해주세요"),
+        content: SizedBox(
+          height: Get.size.height * 0.13,
+          child: Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(bottom: 20),
+                child: Text(
+                  '저장 전에 예측버튼을 먼저 눌러주세요',
+                  style: TextStyle(fontSize: 16, color: Colors.red),
+                ),
+              ),
+              TextField(
+                controller: mapHandler.textEditingController,
+                decoration: const InputDecoration(hintText: "예측상황의 이름을 설정해주세요"),
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(
