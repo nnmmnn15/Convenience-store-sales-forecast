@@ -21,6 +21,7 @@ def getDongName(lat, lng, hdongs):
 
     #### 동이름
     # return(hdongs_2.ADSTRD_NM.values[0])
+    print(hdongs_2)
     return hdongs_2
 
 

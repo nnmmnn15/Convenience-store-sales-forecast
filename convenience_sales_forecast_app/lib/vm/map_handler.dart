@@ -58,7 +58,7 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
   // 해당 동의 예상 매출
   final salesForecast = 0.obs;
 
-  final otherPlaceSales = [].obs;
+  final otherPlaceSales = <ChartModel>[].obs;
 
   // Firebase
   final locInfo = FirebaseFirestore.instance.collection('loc');
@@ -212,26 +212,50 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
   }
 
   // 타지역 매출 예측
+  // gpt
   Future<void> otherForecast() async {
     var url = Uri.parse(
         "$defaultUrl/other_place?teen=${feature1[0] / 100}&twen=${feature1[1] / 100}&thirty=${feature1[2] / 100}&forty=${feature1[3] / 100}&fifty=${feature1[4] / 100}&dong=${selectDongName.value}");
     final response = await http.get(url); // GET 요청
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200) { 
       // 성공적으로 응답을 받았을 때
       String decodedBody = utf8.decode(response.bodyBytes);
       final data = json.decode(decodedBody);
       final otherSale = data['message'];
       otherPlaceSales.value =
-          otherSale.map((info) => ChartModel(info[0], info[1])).toList();
+          otherSale.map<ChartModel>((info) => ChartModel(info[0], info[1])).toList();
 
       otherPlaceSales.sort((a, b) => (a.value - salesForecast.value)
           .abs()
           .compareTo((b.value - salesForecast.value).abs()));
 
-      // 상위 5개 항목만 반환
+      // 상위 5개 항목만 유지
       otherPlaceSales.value = otherPlaceSales.take(5).toList();
     }
   }
+
+
+  // otherForecast() async {
+  //   var url = Uri.parse(
+  //       "$defaultUrl/other_place?teen=${feature1[0] / 100}&twen=${feature1[1] / 100}&thirty=${feature1[2] / 100}&forty=${feature1[3] / 100}&fifty=${feature1[4] / 100}&dong=${selectDongName.value}");
+  //   final response = await http.get(url); // GET 요청
+  //   if (response.statusCode == 200) {
+  //     // 성공적으로 응답을 받았을 때
+  //     String decodedBody = utf8.decode(response.bodyBytes);
+  //     final data = json.decode(decodedBody);
+  //     final otherSale = data['message'];
+  //     otherPlaceSales.value =
+  //         otherSale.map((info) => ChartModel(info[0], info[1])).toList();
+
+  //     otherPlaceSales.sort((a, b) => (a.value - salesForecast.value)
+  //         .abs()
+  //         .compareTo((b.value - salesForecast.value).abs()));
+
+  //     // 상위 5개 항목만 반환
+  //     otherPlaceSales.value = otherPlaceSales.take(5).toList();
+  //     // print(otherPlaceSales.whereType<int>().toList());
+  //   }
+  // }
 
   // 매출 표기
   String wirteSale(sale) {
@@ -254,7 +278,7 @@ class MapHandler extends GetxController with GetTickerProviderStateMixin {
     }
   }
 
-  void detailStateSwitch() {
+  detailStateSwitch() {
     isDetail.value = !isDetail.value;
   }
 
