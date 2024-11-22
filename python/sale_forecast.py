@@ -4,6 +4,8 @@ import geopandas as gpd
 import joblib
 import pandas as pd
 import numpy as np
+import os
+from fastapi.responses import FileResponse
 
 app = FastAPI()
 hdongs =  gpd.read_file('data/서울시 상권분석서비스(영역-행정동)/서울시 상권분석서비스(영역-행정동).shp')
@@ -81,6 +83,13 @@ async def calculate(teen: float = 1, twen:float = 1, thirty : float = 1, forty :
         sales = getStoreSales(pops, dong)[0]
         otherPlaceList.append([dong , int(sales)])
     return {'message':otherPlaceList}
+
+@app.get("/view/{file_name}")
+async def get_file(file_name: str):
+    file_path = os.path.join('plotImage', file_name)
+    if os.path.exists(file_path):
+        return FileResponse(path=file_path, filename=file_name)
+    return {'results' : 'Error'}
 
 @app.get("/all")
 async def all(teen: float = 1, twen:float = 1, thirty : float = 1, forty : float = 1, fifty : float = 1, lat : float=None, lng: float=None):

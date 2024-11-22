@@ -151,14 +151,16 @@ class SalesDetail extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  // Container(
-                  //   color: Colors.blue,
-                  //   width: MediaQuery.of(context).size.width * 0.35,
-                  //   height: MediaQuery.of(context).size.height * 0.3,
-                  //   child: const Text('차트1'),
-                  // ),
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.35,
+                    height: MediaQuery.of(context).size.height * 0.35,
+                    child: Image.network(
+                      'http://127.0.0.1:8000/view/${mapHandler.selectDongName.value}.png',
+                      // width: ,
+                    ),
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.45,
                     height: MediaQuery.of(context).size.height * 0.3,
                     child: Obx(
                       () => SfCartesianChart(
@@ -171,27 +173,29 @@ class SalesDetail extends StatelessWidget {
                             yValueMapper: (dynamic region, _) => region.value,
                             dataLabelSettings:
                                 const DataLabelSettings(isVisible: true),
+                            enableTooltip: true,
                           )
                         ],
                         title: const ChartTitle(text: '지역별 데이터'),
-                        // legend: const Legend(isVisible: true),
-                        tooltipBehavior: TooltipBehavior(enable: true),
                       ),
                     ),
                   ),
                 ],
               ),
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      inputAlert();
-                    },
-                    child: const Text('저장'),
-                  ),
-                ],
+              Padding(
+                padding: const EdgeInsets.only(right: 50.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        inputAlert();
+                      },
+                      child: const Text('저장'),
+                    ),
+                  ],
+                ),
               )
             ],
           ),
