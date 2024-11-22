@@ -1,3 +1,4 @@
+import 'package:convenience_sales_forecast_app/model/chart_model.dart';
 import 'package:convenience_sales_forecast_app/vm/map_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -163,16 +164,23 @@ class SalesDetail extends StatelessWidget {
                     width: MediaQuery.of(context).size.width * 0.45,
                     height: MediaQuery.of(context).size.height * 0.3,
                     child: Obx(
-                      () => SfCartesianChart(
+                      () =>SfCartesianChart(
                         primaryXAxis: const CategoryAxis(),
-                        primaryYAxis: const NumericAxis(),
+                        primaryYAxis: NumericAxis(
+                          minimum: mapHandler.otherPlaceSales.isNotEmpty
+                              ? mapHandler.otherPlaceSales.map((e) => e.value).reduce((a, b) => a < b ? a : b) * 0.8
+                              : 0, // 최소값의 80%
+                          maximum: mapHandler.otherPlaceSales.isNotEmpty
+                              ? mapHandler.otherPlaceSales.map((e) => e.value).reduce((a, b) => a > b ? a : b) * 1.2
+                              : 100, // 최대값의 120%
+                          interval: 5000, // 눈금 간격
+                        ),
                         series: [
-                          ColumnSeries<dynamic, String>(
-                            dataSource: mapHandler.otherPlaceSales.value,
-                            xValueMapper: (dynamic region, _) => region.name,
-                            yValueMapper: (dynamic region, _) => region.value,
-                            dataLabelSettings:
-                                const DataLabelSettings(isVisible: true),
+                          ColumnSeries<ChartModel, String>(
+                            dataSource: mapHandler.otherPlaceSales.value, // 타입이 보장된 RxList<ChartModel>
+                            xValueMapper: (ChartModel region, _) => region.name,
+                            yValueMapper: (ChartModel region, _) => region.value,
+                            dataLabelSettings: const DataLabelSettings(isVisible: true),
                             enableTooltip: true,
                           )
                         ],

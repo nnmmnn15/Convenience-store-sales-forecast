@@ -92,27 +92,48 @@ class MapLocationPick extends StatelessWidget {
                               child: Column(
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(20,15,20,10),
+                                    padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),
                                     child: Row(
-                                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start, // Row 내부 정렬
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween, // Row의 가로 정렬
                                       children: [
+                                        // 예상 매출 금액
                                         Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.start, // Column 내부 정렬
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          children: [
+                                            const Text(
+                                              '예상 매출 금액',
+                                              style: TextStyle(
+                                                fontSize: 32,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            Text(
+                                              '${mapHandler.wirteSale(mapHandler.salesForecast)}원',
+                                              style: const TextStyle(
+                                                fontSize: 28,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        // 선택한 지역
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start, // Column 내부 정렬
+                                          mainAxisAlignment: MainAxisAlignment.start,
                                           children: [
                                             Text(
-                                              '예상 매출 금액\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t선택한 지역 : ${mapHandler.selectDongName}',
+                                              '선택한 지역 :\t\t${mapHandler.selectDongName}',
                                               style: const TextStyle(
                                                 fontSize: 32,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
                                             Text(
-                                              '${mapHandler.wirteSale(mapHandler.salesForecast)}원\t\t\t\t\t\t\t\t\t\t\t\t${mapHandler.selectDongName} 편의점 수 : \t${mapHandler.storeCount.value}',
+                                              '${mapHandler.selectDongName} 편의점 수 : \t${mapHandler.storeCount.value}',
                                               style: const TextStyle(
-                                                fontSize: 32,
+                                                fontSize: 28,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
@@ -129,10 +150,10 @@ class MapLocationPick extends StatelessWidget {
                                         style: ElevatedButton.styleFrom(
                                           padding: const EdgeInsets.symmetric(vertical: 16), // 버튼 높이 조정 (선택 사항)
                                         ),
-                                        onPressed: () {
-                                          mapHandler.detailStateSwitch();
+                                        onPressed: () async{
+                                          await mapHandler.detailStateSwitch();
                                           mapHandler.feature1.value = [100, 100, 100, 100, 100];
-                                          mapHandler.otherForecast();
+                                          await mapHandler.otherForecast();
                                         },
                                         child: const Text('시뮬레이션'),
                                       ),
@@ -140,6 +161,7 @@ class MapLocationPick extends StatelessWidget {
                                   ),
                                 ],
                               ),
+
                             ),
                           ),
                         ],
@@ -147,7 +169,6 @@ class MapLocationPick extends StatelessWidget {
                     )
                   : const SizedBox.shrink(),
             ),
-
             Obx(
               () => SlideTransition(
                 position: mapHandler.offsetAnimation,

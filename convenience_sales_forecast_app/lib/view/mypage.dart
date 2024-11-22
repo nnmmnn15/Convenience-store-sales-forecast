@@ -203,7 +203,7 @@ class Mypage extends StatelessWidget {
       textCancel: "취소",
       confirmTextColor: Colors.white,
       cancelTextColor: Colors.black,
-      buttonColor: Colors.lightGreen,
+      buttonColor: Colors.blueGrey[300],
       onConfirm: () async {
         await userHandler.signOut();
       },
