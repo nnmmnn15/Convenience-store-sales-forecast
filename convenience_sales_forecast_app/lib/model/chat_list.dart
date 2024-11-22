@@ -10,8 +10,8 @@ class ChatList {
     required this.sender,
     required this.roomId,
   });
-  
-factory ChatList.fromMap(Map<String, dynamic> map, String roomId) {
+
+  factory ChatList.fromMap(Map<String, dynamic> map, String roomId) {
     return ChatList(
       text: map['text'] ?? '',
       timestamp: map['timestamp'] ?? '',
